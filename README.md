@@ -24,8 +24,8 @@ Currently, orbit-db uses in-memory cache as local storage. When the user maps a 
 
 ## To-do
 
-* [ ] try IPFS browser workability
-* [ ] update ngx-leaflet-starter to Angular 6
+* [x] try IPFS browser workability
+* [x] update ngx-leaflet-starter to Angular 6
 * [ ] copy ngx-leaflet-starter into this project and make it map-only
 * [ ] add orbit-db and sync with map room table
 * [ ] add map editing tool
