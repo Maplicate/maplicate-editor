@@ -27,6 +27,9 @@ export class MapComponent implements OnInit {
     L.control.layers(this.mapService.baseMaps).addTo(map);
     L.control.scale().addTo(map);
 
+    const drawControl = new L.Control.Draw();
+    map.addControl(drawControl);
+
     this.mapService.map = map;
   }
 }

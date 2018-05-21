@@ -16,6 +16,7 @@ import { ToolbarComponent } from "./toolbar/toolbar.component";
 import { MapService } from "./map.service";
 
 import "leaflet";
+import "leaflet-draw";
 
 @NgModule({
   declarations: [MapComponent, AppComponent, ToolbarComponent],
