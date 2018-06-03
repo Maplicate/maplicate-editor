@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-leaflet-starter": {
+    "mapix": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ngx-leaflet-starter",
+            "outputPath": "dist/mapix",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -45,18 +45,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ngx-leaflet-starter:build"
+            "browserTarget": "mapix:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ngx-leaflet-starter:build:production"
+              "browserTarget": "mapix:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ngx-leaflet-starter:build"
+            "browserTarget": "mapix:build"
           }
         },
         "test": {
@@ -80,7 +80,7 @@
         }
       }
     },
-    "ngx-leaflet-starter-e2e": {
+    "mapix-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -88,7 +88,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "ngx-leaflet-starter:serve"
+            "devServerTarget": "mapix:serve"
           }
         },
         "lint": {
@@ -101,5 +101,5 @@
       }
     }
   },
-  "defaultProject": "ngx-leaflet-starter"
+  "defaultProject": "mapix"
 }

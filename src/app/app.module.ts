@@ -14,6 +14,7 @@ import { MapComponent } from "./map/map.component";
 import { ToolbarComponent } from "./toolbar/toolbar.component";
 
 import { MapService } from "./map.service";
+import { DbService } from "./db.service";
 
 import "leaflet";
 import "leaflet-draw";
@@ -31,7 +32,7 @@ import "leaflet-draw";
     MatTooltipModule,
     MatSnackBarModule
   ],
-  providers: [MapService],
+  providers: [MapService, DbService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
