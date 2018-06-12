@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
-
-const IPFS = require("ipfs");
-const OrbitDB = require("orbit-db");
+import * as IPFS from "ipfs";
+import * as OrbitDB from "orbit-db";
 
 @Injectable()
 export class DbService {
@@ -22,7 +21,7 @@ export class DbService {
     });
   }
 
-  get mapId() {
+  get mapAddress(): string {
     if (!this.ready || !this.map) {
       return null;
     }
@@ -30,7 +29,7 @@ export class DbService {
     return this.map.address.toString();
   }
 
-  async create() {
+  async createMap(name: string): Promise<string> {
     if (!this.ready) {
       throw new Error("IPFS is not ready.");
     }
@@ -39,13 +38,13 @@ export class DbService {
       throw new Error("Map has been created.");
     }
 
-    this.map = await this.orbitdb.docs("orbit.map");
+    this.map = await this.orbitdb.docs(name);
     await this.map.load();
 
-    console.log("map address:", this.map.address.toString());
+    return this.map.address.toString();
   }
 
-  async join(address: string) {
+  async joinMap(address: string) {
     if (!this.ready) {
       throw new Error("IPFS is not ready.");
     }

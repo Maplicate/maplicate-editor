@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Create A Map</h2>
+<mat-dialog-content>
+  <mat-form-field>
+    <input #mapNameInput matInput placeholder="Name" [value]="name" type="text" required>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button
+          [mat-dialog-close]="mapNameInput.value"
+          [disabled]="!mapNameInput.value">
+    Create
+  </button>
+</mat-dialog-actions>

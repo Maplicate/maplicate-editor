@@ -1,4 +1,14 @@
 <mat-toolbar color="primary">
-  <h2>mapix</h2>
+  <h2>Mapix</h2>
+  <mat-divider [vertical]="true"></mat-divider>
+  <button mat-icon-button>
+    <mat-icon>book</mat-icon>
+  </button>
   <span class="toolbar-filler"></span>
+  <button mat-button (click)="createMap()">
+    <mat-icon>add</mat-icon> Create
+  </button>
+  <button mat-button>
+    <mat-icon>group</mat-icon> Join
+  </button>
 </mat-toolbar>

@@ -12,22 +12,4 @@ export class ControlPanelComponent implements OnInit {
   constructor(private db: DbService) {}
 
   ngOnInit() {}
-
-  public async createMap() {
-    try {
-      await this.db.create();
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  public async joinMap(address: string) {
-    console.log("joining:", address);
-
-    try {
-      await this.db.join(address);
-    } catch (e) {
-      console.log(e);
-    }
-  }
 }

@@ -5,28 +5,31 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatIconModule } from "@angular/material/icon";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatDividerModule } from "@angular/material/divider";
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 import { AppComponent } from "./app.component";
 import { MapComponent } from "./map/map.component";
 import { ToolbarComponent } from "./toolbar/toolbar.component";
+import { ControlPanelComponent } from "./control-panel/control-panel.component";
+import { CreateMapDialogComponent } from "./create-map-dialog/create-map-dialog.component";
 
 import { MapService } from "./map.service";
 import { DbService } from "./db.service";
 
 import "leaflet";
 import "leaflet-draw";
-import { ControlPanelComponent } from "./control-panel/control-panel.component";
 
 @NgModule({
   declarations: [
     MapComponent,
     AppComponent,
     ToolbarComponent,
-    ControlPanelComponent
+    ControlPanelComponent,
+    CreateMapDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -37,9 +40,11 @@ import { ControlPanelComponent } from "./control-panel/control-panel.component";
     MatToolbarModule,
     MatInputModule,
     MatIconModule,
-    MatTooltipModule,
+    MatDividerModule,
+    MatDialogModule,
     MatSnackBarModule
   ],
+  entryComponents: [CreateMapDialogComponent],
   providers: [MapService, DbService],
   bootstrap: [AppComponent]
 })
