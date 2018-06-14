@@ -16,6 +16,7 @@ import { MapComponent } from "./map/map.component";
 import { ToolbarComponent } from "./toolbar/toolbar.component";
 import { ControlPanelComponent } from "./control-panel/control-panel.component";
 import { CreateMapDialogComponent } from "./create-map-dialog/create-map-dialog.component";
+import { JoinMapDialogComponent } from "./join-map-dialog/join-map-dialog.component";
 
 import { MapService } from "./map.service";
 import { DbService } from "./db.service";
@@ -29,7 +30,8 @@ import "leaflet-draw";
     AppComponent,
     ToolbarComponent,
     ControlPanelComponent,
-    CreateMapDialogComponent
+    CreateMapDialogComponent,
+    JoinMapDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +46,7 @@ import "leaflet-draw";
     MatDialogModule,
     MatSnackBarModule
   ],
-  entryComponents: [CreateMapDialogComponent],
+  entryComponents: [CreateMapDialogComponent, JoinMapDialogComponent],
   providers: [MapService, DbService],
   bootstrap: [AppComponent]
 })

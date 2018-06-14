@@ -3,6 +3,7 @@ import { MatDialog } from "@angular/material";
 import { MatSnackBar } from "@angular/material";
 
 import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
+import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
 import { DbService } from "../db.service";
 
 @Component({
@@ -19,16 +20,38 @@ export class ToolbarComponent implements OnInit {
 
   ngOnInit() {}
 
-  public createMap() {
+  public createMap(): void {
     const createMapDialog = this.dialog.open(CreateMapDialogComponent, {
-      width: "250px"
+      width: "400px"
     });
 
-    createMapDialog.afterClosed().subscribe(async name => {
+    createMapDialog.afterClosed().subscribe(async (name: string) => {
       try {
         const address = await this.db.createMap(name);
         const snackBarRef = this.snackBar.open(
           `Map created: ${address}`,
+          "Close"
+        );
+
+        snackBarRef.onAction().subscribe(() => {
+          snackBarRef.dismiss();
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  }
+
+  public joinMap(): void {
+    const joinMapDialog = this.dialog.open(JoinMapDialogComponent, {
+      width: "400px"
+    });
+
+    joinMapDialog.afterClosed().subscribe(async (address: string) => {
+      try {
+        await this.db.joinMap(address);
+        const snackBarRef = this.snackBar.open(
+          `Map joined: ${address}`,
           "Close"
         );
 

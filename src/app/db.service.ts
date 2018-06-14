@@ -10,7 +10,20 @@ export class DbService {
   public ready: boolean;
 
   constructor() {
-    this.ipfs = new IPFS();
+    const ipfsOptions = {
+      EXPERIMENTAL: {
+        pubsub: true
+      },
+      config: {
+        Addresses: {
+          Swarm: [
+            "/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star"
+          ]
+        }
+      }
+    };
+
+    this.ipfs = new IPFS(ipfsOptions);
     this.ready = false;
 
     this.ipfs.once("ready", async () => {
@@ -44,7 +57,7 @@ export class DbService {
     return this.map.address.toString();
   }
 
-  async joinMap(address: string) {
+  async joinMap(address: string): Promise<string> {
     if (!this.ready) {
       throw new Error("IPFS is not ready.");
     }
@@ -56,6 +69,6 @@ export class DbService {
     this.map = await this.orbitdb.docs(address);
     await this.map.load();
 
-    console.log("map address:", this.map.address.toString());
+    return this.map.address.toString();
   }
 }
