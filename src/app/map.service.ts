@@ -1,10 +1,12 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import * as L from "leaflet";
+import uuid = require("uuid/v4");
 
 @Injectable()
 export class MapService {
   public map: L.Map;
+  public mapEditor: L.Control.Draw;
   public baseMaps: any;
   private vtLayer: any;
 
@@ -47,10 +49,48 @@ export class MapService {
     };
   }
 
-  disableMouseEvent(elementId: string) {
+  disableMouseEvent(elementId: string): void {
     const element = <HTMLElement>document.getElementById(elementId);
 
     L.DomEvent.disableClickPropagation(element);
     L.DomEvent.disableScrollPropagation(element);
+  }
+
+  createMap(elementId: string): void {
+    const map = L.map("map", {
+      zoomControl: false,
+      center: [0, 0],
+      zoom: 3,
+      minZoom: 4,
+      maxZoom: 19,
+      layers: [this.baseMaps.OpenStreetMap]
+    });
+
+    L.control.zoom({ position: "topright" }).addTo(map);
+    L.control.layers(this.baseMaps).addTo(map);
+    L.control.scale().addTo(map);
+
+    this.map = map;
+  }
+
+  createMapEditor(): void {
+    if (!this.map) {
+      throw new Error("Map is not created");
+    }
+
+    const mapEditor = new L.Control.Draw();
+    this.map.addControl(mapEditor);
+  }
+
+  onFeatureCreated(callback) {
+    this.map.on(L.Draw.Event.CREATED, (e: L.DrawEvents.Created) => {
+      const layer = e.layer;
+      this.map.addLayer(layer);
+
+      const feature = layer.toGeoJSON();
+      feature.properties._id = uuid();
+
+      callback(feature);
+    });
   }
 }

@@ -1,9 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs/Rx";
 import * as L from "leaflet";
+import { DbService } from "../db.service";
 import { MapService } from "../map.service";
-
-import "rxjs/add/operator/catch";
 
 @Component({
   selector: "app-map",
@@ -11,25 +10,16 @@ import "rxjs/add/operator/catch";
   styleUrls: ["./map.component.scss"]
 })
 export class MapComponent implements OnInit {
-  constructor(private mapService: MapService) {}
+  constructor(private mapService: MapService, private db: DbService) {}
 
   ngOnInit() {
-    const map = L.map("map", {
-      zoomControl: false,
-      center: [0, 0],
-      zoom: 3,
-      minZoom: 4,
-      maxZoom: 19,
-      layers: [this.mapService.baseMaps.OpenStreetMap]
+    this.mapService.createMap("map");
+    this.mapService.createMapEditor();
+
+    this.mapService.onFeatureCreated(async feature => {
+      // add a random id
+      feature._id = feature.properties._id;
+      await this.db.addMapFeature(feature);
     });
-
-    L.control.zoom({ position: "topright" }).addTo(map);
-    L.control.layers(this.mapService.baseMaps).addTo(map);
-    L.control.scale().addTo(map);
-
-    const drawControl = new L.Control.Draw();
-    map.addControl(drawControl);
-
-    this.mapService.map = map;
   }
 }

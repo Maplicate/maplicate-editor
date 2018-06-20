@@ -71,4 +71,16 @@ export class DbService {
 
     return this.map.address.toString();
   }
+
+  async addMapFeature(feature): Promise<any> {
+    if (!this.map) {
+      throw new Error("Map is not created.");
+    }
+
+    if (!feature._id) {
+      throw new Error("Feature ID is undefined.");
+    }
+
+    await this.map.put(feature);
+  }
 }
