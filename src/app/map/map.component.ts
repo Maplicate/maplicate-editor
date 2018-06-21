@@ -10,16 +10,21 @@ import { MapService } from "../map.service";
   styleUrls: ["./map.component.scss"]
 })
 export class MapComponent implements OnInit {
-  constructor(private mapService: MapService, private db: DbService) {}
+  constructor(private map: MapService, private db: DbService) {}
 
   ngOnInit() {
-    this.mapService.createMap("map");
-    this.mapService.createMapEditor();
+    this.map.createMap("map");
+    this.map.createMapEditor();
 
-    this.mapService.onFeatureCreated(async feature => {
-      // add a random id
+    this.map.events.featureCreated.subscribe(async feature => {
       feature._id = feature.properties._id;
-      await this.db.addMapFeature(feature);
+      await this.db.addFeature(feature);
+    });
+
+    this.db.events.mapReplicated.subscribe(features => {
+      for (const feature of features) {
+        this.map.addFeature(feature);
+      }
     });
   }
 }

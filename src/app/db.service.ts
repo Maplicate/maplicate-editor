@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import * as IPFS from "ipfs";
 import * as OrbitDB from "orbit-db";
 
@@ -7,7 +7,9 @@ export class DbService {
   private ipfs: any;
   private orbitdb: any;
   private map: any;
+  private featureSet: Set<string>;
   public ready: boolean;
+  public events: any;
 
   constructor() {
     const ipfsOptions = {
@@ -25,6 +27,10 @@ export class DbService {
 
     this.ipfs = new IPFS(ipfsOptions);
     this.ready = false;
+    this.events = {
+      mapReady: new EventEmitter(),
+      mapReplicated: new EventEmitter()
+    };
 
     this.ipfs.once("ready", async () => {
       this.orbitdb = new OrbitDB(this.ipfs);
@@ -51,28 +57,32 @@ export class DbService {
       throw new Error("Map has been created.");
     }
 
-    this.map = await this.orbitdb.docs(name);
+    this.map = await this.orbitdb.docs(name, { write: ["*"] });
+    this.map.events.on("replicated", () => {
+      const newFeatures = this.map.query(doc => !this.featureSet.has(doc._id));
+
+      for (const feature of newFeatures) {
+        this.featureSet.add(feature._id);
+      }
+
+      this.events.mapReplicated.emit(newFeatures);
+    });
+
     await this.map.load();
+
+    const ids = this.map.query(doc => true).map((doc: any) => doc._id);
+
+    this.featureSet = new Set(ids);
+    this.events.mapReady.emit();
 
     return this.map.address.toString();
   }
 
   async joinMap(address: string): Promise<string> {
-    if (!this.ready) {
-      throw new Error("IPFS is not ready.");
-    }
-
-    if (this.map) {
-      throw new Error("Map has been created.");
-    }
-
-    this.map = await this.orbitdb.docs(address);
-    await this.map.load();
-
-    return this.map.address.toString();
+    return this.createMap(address);
   }
 
-  async addMapFeature(feature): Promise<any> {
+  async addFeature(feature): Promise<any> {
     if (!this.map) {
       throw new Error("Map is not created.");
     }

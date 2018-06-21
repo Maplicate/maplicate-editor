@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, EventEmitter } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import * as L from "leaflet";
 import uuid = require("uuid/v4");
@@ -8,7 +8,7 @@ export class MapService {
   public map: L.Map;
   public mapEditor: L.Control.Draw;
   public baseMaps: any;
-  private vtLayer: any;
+  public events: any;
 
   constructor(private http: HttpClient) {
     const osmAttr =
@@ -47,6 +47,10 @@ export class MapService {
         }
       )
     };
+
+    this.events = {
+      featureCreated: new EventEmitter()
+    };
   }
 
   disableMouseEvent(elementId: string): void {
@@ -80,17 +84,18 @@ export class MapService {
 
     const mapEditor = new L.Control.Draw();
     this.map.addControl(mapEditor);
-  }
 
-  onFeatureCreated(callback) {
     this.map.on(L.Draw.Event.CREATED, (e: L.DrawEvents.Created) => {
-      const layer = e.layer;
-      this.map.addLayer(layer);
-
-      const feature = layer.toGeoJSON();
+      const feature = e.layer.toGeoJSON();
       feature.properties._id = uuid();
 
-      callback(feature);
+      this.addFeature(feature);
+      this.events.featureCreated.emit(feature);
     });
+  }
+
+  addFeature(feature) {
+    const layer = L.geoJSON(feature);
+    this.map.addLayer(layer);
   }
 }
