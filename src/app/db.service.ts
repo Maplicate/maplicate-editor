@@ -1,13 +1,14 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import * as IPFS from "ipfs";
 import * as OrbitDB from "orbit-db";
+import * as md5 from "md5";
 
 @Injectable()
 export class DbService {
   private ipfs: any;
   private orbitdb: any;
   private map: any;
-  private featureSet: Set<string>;
+  private docMap: any;
   public ready: boolean;
   public events: any;
 
@@ -59,20 +60,35 @@ export class DbService {
 
     this.map = await this.orbitdb.docs(name, { write: ["*"] });
     this.map.events.on("replicated", () => {
-      const newFeatures = this.map.query(doc => !this.featureSet.has(doc._id));
+      const newDocs = this.map.query(doc => !this.docMap[doc._id]);
+      const editedDocs = this.map.query(doc => {
+        return this.docMap[doc._id] && this.docMap[doc._id].hash !== doc._hash;
+      });
+      const deletedDocs = [];
 
-      for (const feature of newFeatures) {
-        this.featureSet.add(feature._id);
+      for (const id in this.docMap) {
+        if (this.map.get(id).length === 0) {
+          deletedDocs.push(id);
+          delete this.docMap[id];
+        }
       }
 
-      this.events.mapReplicated.emit(newFeatures);
+      const updates: any = {};
+
+      updates.new = newDocs.map(doc => doc.feature);
+      updates.edited = editedDocs.map(doc => doc.feature);
+      updates.deleted = deletedDocs;
+
+      this.events.mapReplicated.emit(updates);
     });
 
     await this.map.load();
 
-    const ids = this.map.query(doc => true).map((doc: any) => doc._id);
+    this.docMap = this.map.query(doc => doc).reduce((docMap, doc) => {
+      docMap[doc._id] = doc._hash;
+      return docMap;
+    }, {});
 
-    this.featureSet = new Set(ids);
     this.events.mapReady.emit();
 
     return this.map.address.toString();
@@ -87,10 +103,16 @@ export class DbService {
       throw new Error("Map is not created.");
     }
 
-    if (!feature._id) {
+    if (!feature.properties._id) {
       throw new Error("Feature ID is undefined.");
     }
 
-    await this.map.put(feature);
+    const doc = {
+      _id: feature.properties._id,
+      _hash: md5(JSON.stringify(feature)),
+      feature
+    };
+
+    await this.map.put(doc);
   }
 }

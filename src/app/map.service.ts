@@ -9,6 +9,7 @@ export class MapService {
   public mapEditor: L.Control.Draw;
   public baseMaps: any;
   public events: any;
+  private layerMap: any;
 
   constructor(private http: HttpClient) {
     const osmAttr =
@@ -51,6 +52,8 @@ export class MapService {
     this.events = {
       featureCreated: new EventEmitter()
     };
+
+    this.layerMap = {};
   }
 
   disableMouseEvent(elementId: string): void {
@@ -97,5 +100,16 @@ export class MapService {
   addFeature(feature) {
     const layer = L.geoJSON(feature);
     this.map.addLayer(layer);
+    this.layerMap[feature.properties._id] = layer;
+  }
+
+  removeFeature(featureId: string) {
+    this.map.removeLayer(this.layerMap[featureId]);
+    delete this.layerMap[featureId];
+  }
+
+  updateFeature(feature) {
+    this.removeFeature(feature.properties._id);
+    this.addFeature(feature);
   }
 }

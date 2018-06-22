@@ -17,13 +17,20 @@ export class MapComponent implements OnInit {
     this.map.createMapEditor();
 
     this.map.events.featureCreated.subscribe(async feature => {
-      feature._id = feature.properties._id;
       await this.db.addFeature(feature);
     });
 
-    this.db.events.mapReplicated.subscribe(features => {
-      for (const feature of features) {
+    this.db.events.mapReplicated.subscribe(updates => {
+      for (const feature of updates.new) {
         this.map.addFeature(feature);
+      }
+
+      for (const feature of updates.edited) {
+        this.map.updateFeature(feature);
+      }
+
+      for (const id of updates.deleted) {
+        this.map.removeFeature(id);
       }
     });
   }
