@@ -26,6 +26,10 @@ export class ToolbarComponent implements OnInit {
     });
 
     createMapDialog.afterClosed().subscribe(async (name: string) => {
+      if (!name) {
+        return;
+      }
+
       try {
         const address = await this.db.createMap(name);
         const snackBarRef = this.snackBar.open(
@@ -48,6 +52,10 @@ export class ToolbarComponent implements OnInit {
     });
 
     joinMapDialog.afterClosed().subscribe(async (address: string) => {
+      if (!address) {
+        return;
+      }
+
       try {
         await this.db.joinMap(address);
         const snackBarRef = this.snackBar.open(
