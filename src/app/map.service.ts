@@ -5,8 +5,7 @@ import uuid = require("uuid/v4");
 
 @Injectable()
 export class MapService {
-  public map: L.Map;
-  public mapEditor: L.Control.Draw;
+  public map: any;
   public baseMaps: any;
   public events: any;
   private layerMap: any;
@@ -80,15 +79,14 @@ export class MapService {
     this.map = map;
   }
 
-  createMapEditor(): void {
+  enableEditing(): void {
     if (!this.map) {
       throw new Error("Map is not created");
     }
 
-    const mapEditor = new L.Control.Draw();
-    this.map.addControl(mapEditor);
+    this.map.pm.addControls();
 
-    this.map.on(L.Draw.Event.CREATED, (e: L.DrawEvents.Created) => {
+    this.map.on("pm:create", (e: any) => {
       const feature = e.layer.toGeoJSON();
       feature.properties._id = uuid();
 

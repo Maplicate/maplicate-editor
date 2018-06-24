@@ -14,7 +14,10 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     this.map.createMap("map");
-    this.map.createMapEditor();
+
+    this.db.events.mapReady.subscribe(() => {
+      this.map.enableEditing();
+    });
 
     this.map.events.featureCreated.subscribe(async feature => {
       await this.db.addFeature(feature);

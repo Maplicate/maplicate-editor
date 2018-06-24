@@ -14,7 +14,7 @@ import { MapService } from "./map.service";
 import { DbService } from "./db.service";
 
 import "leaflet";
-import "leaflet-draw";
+import "leaflet.pm";
 
 @NgModule({
   declarations: [

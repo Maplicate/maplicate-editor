@@ -71,6 +71,8 @@ export class DbService {
       return docMap;
     }, {});
 
+    this.events.mapReady.emit();
+
     return this.map.address.toString();
   }
 
@@ -97,9 +99,6 @@ export class DbService {
   }
 
   private _bindMapEvents() {
-    this.events.mapReplicate = new EventEmitter();
-    this.events.mapReplicated = new EventEmitter();
-
     this.map.events.on("replicate", () => {
       this.events.mapReplicate.emit();
     });
