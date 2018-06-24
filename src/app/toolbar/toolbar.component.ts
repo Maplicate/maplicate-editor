@@ -12,11 +12,22 @@ import { DbService } from "../db.service";
   styleUrls: ["./toolbar.component.scss"]
 })
 export class ToolbarComponent implements OnInit {
+  public loading: boolean;
+  public dbReady: boolean;
+
   constructor(
     private db: DbService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.dbReady = false;
+    this.loading = true;
+
+    this.db.events.dbReady.subscribe(() => {
+      this.loading = false;
+      this.dbReady = true;
+    });
+  }
 
   ngOnInit() {}
 
@@ -31,7 +42,11 @@ export class ToolbarComponent implements OnInit {
       }
 
       try {
+        this.loading = true;
+
         const address = await this.db.createMap(name);
+        this._bindMapEvents();
+
         const snackBarRef = this.snackBar.open(
           `Map created: ${address}`,
           "Close"
@@ -43,6 +58,8 @@ export class ToolbarComponent implements OnInit {
       } catch (error) {
         console.log(error);
       }
+
+      this.loading = false;
     });
   }
 
@@ -57,7 +74,11 @@ export class ToolbarComponent implements OnInit {
       }
 
       try {
+        this.loading = true;
+
         await this.db.joinMap(address);
+        this._bindMapEvents();
+
         const snackBarRef = this.snackBar.open(
           `Map joined: ${address}`,
           "Close"
@@ -69,6 +90,18 @@ export class ToolbarComponent implements OnInit {
       } catch (error) {
         console.log(error);
       }
+
+      this.loading = false;
+    });
+  }
+
+  private _bindMapEvents() {
+    this.db.events.mapReplicate.subscribe(() => {
+      this.loading = true;
+    });
+
+    this.db.events.mapReplicated.subscribe(() => {
+      this.loading = false;
     });
   }
 }

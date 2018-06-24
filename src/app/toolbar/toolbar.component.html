@@ -4,10 +4,12 @@
     <mat-icon>book</mat-icon>
   </button>
   <span class="toolbar-filler"></span>
-  <button mat-button (click)="createMap()">
+  <button mat-button (click)="createMap()" [disabled]="!dbReady">
     <mat-icon>add</mat-icon> Create
   </button>
-  <button mat-button (click)="joinMap()">
+  <button mat-button (click)="joinMap()" [disabled]="!dbReady">
     <mat-icon>group</mat-icon> Join
   </button>
+  <mat-progress-spinner *ngIf="loading" mode="indeterminate" color="accent" diameter="30">
+  </mat-progress-spinner>
 </mat-toolbar>

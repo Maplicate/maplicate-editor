@@ -29,7 +29,9 @@ export class DbService {
     this.ipfs = new IPFS(ipfsOptions);
     this.ready = false;
     this.events = {
+      dbReady: new EventEmitter(),
       mapReady: new EventEmitter(),
+      mapReplicate: new EventEmitter(),
       mapReplicated: new EventEmitter()
     };
 
@@ -37,6 +39,7 @@ export class DbService {
       this.orbitdb = new OrbitDB(this.ipfs);
       this.ready = true;
 
+      this.events.dbReady.emit();
       console.log("IPFS is ready");
     });
   }
@@ -59,28 +62,7 @@ export class DbService {
     }
 
     this.map = await this.orbitdb.docs(name, { write: ["*"] });
-    this.map.events.on("replicated", () => {
-      const newDocs = this.map.query(doc => !this.docMap[doc._id]);
-      const editedDocs = this.map.query(doc => {
-        return this.docMap[doc._id] && this.docMap[doc._id].hash !== doc._hash;
-      });
-      const deletedDocs = [];
-
-      for (const id in this.docMap) {
-        if (this.map.get(id).length === 0) {
-          deletedDocs.push(id);
-          delete this.docMap[id];
-        }
-      }
-
-      const updates: any = {};
-
-      updates.new = newDocs.map(doc => doc.feature);
-      updates.edited = editedDocs.map(doc => doc.feature);
-      updates.deleted = deletedDocs;
-
-      this.events.mapReplicated.emit(updates);
-    });
+    this._bindMapEvents();
 
     await this.map.load();
 
@@ -88,8 +70,6 @@ export class DbService {
       docMap[doc._id] = doc._hash;
       return docMap;
     }, {});
-
-    this.events.mapReady.emit();
 
     return this.map.address.toString();
   }
@@ -114,5 +94,37 @@ export class DbService {
     };
 
     await this.map.put(doc);
+  }
+
+  private _bindMapEvents() {
+    this.events.mapReplicate = new EventEmitter();
+    this.events.mapReplicated = new EventEmitter();
+
+    this.map.events.on("replicate", () => {
+      this.events.mapReplicate.emit();
+    });
+
+    this.map.events.on("replicated", () => {
+      const newDocs = this.map.query(doc => !this.docMap[doc._id]);
+      const editedDocs = this.map.query(doc => {
+        return this.docMap[doc._id] && this.docMap[doc._id].hash !== doc._hash;
+      });
+      const deletedDocs = [];
+
+      for (const id in this.docMap) {
+        if (this.map.get(id).length === 0) {
+          deletedDocs.push(id);
+          delete this.docMap[id];
+        }
+      }
+
+      const updates: any = {};
+
+      updates.new = newDocs.map(doc => doc.feature);
+      updates.edited = editedDocs.map(doc => doc.feature);
+      updates.deleted = deletedDocs;
+
+      this.events.mapReplicated.emit(updates);
+    });
   }
 }
