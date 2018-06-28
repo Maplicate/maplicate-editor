@@ -1,16 +1,38 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import * as L from "leaflet";
-import uuid = require("uuid/v4");
+
+export interface IFeatureLayer {
+  feature?: any;
+  featureId?: string;
+  layerId?: string;
+}
 
 @Injectable()
 export class MapService {
-  public map: any;
-  public baseMaps: any;
   public events: any;
-  private layerMap: any;
+  public map: any;
+  private mapLayer: L.GeoJSON;
+
+  // layerId -> featureId
+  private featureMap: any;
 
   constructor(private http: HttpClient) {
+    this.events = {
+      featureCreated: new EventEmitter(),
+      featureUpdated: new EventEmitter(),
+      featureRemoved: new EventEmitter()
+    };
+  }
+
+  disableMouseEvent(elementId: string): void {
+    const element = <HTMLElement>document.getElementById(elementId);
+
+    L.DomEvent.disableClickPropagation(element);
+    L.DomEvent.disableScrollPropagation(element);
+  }
+
+  createMap(elementId: string): void {
     const osmAttr =
       "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, " +
       "Tiles courtesy of <a href='http://hot.openstreetmap.org/' target='_blank'>Humanitarian OpenStreetMap Team</a>";
@@ -24,7 +46,7 @@ export class MapService {
       "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> " +
       "&copy; <a href='http://cartodb.com/attributions'>CartoDB</a>";
 
-    this.baseMaps = {
+    const baseMaps = {
       OpenStreetMap: L.tileLayer(
         "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
         {
@@ -48,32 +70,17 @@ export class MapService {
       )
     };
 
-    this.events = {
-      featureCreated: new EventEmitter()
-    };
-
-    this.layerMap = {};
-  }
-
-  disableMouseEvent(elementId: string): void {
-    const element = <HTMLElement>document.getElementById(elementId);
-
-    L.DomEvent.disableClickPropagation(element);
-    L.DomEvent.disableScrollPropagation(element);
-  }
-
-  createMap(elementId: string): void {
     const map = L.map("map", {
       zoomControl: false,
       center: [0, 0],
       zoom: 3,
       minZoom: 4,
       maxZoom: 19,
-      layers: [this.baseMaps.OpenStreetMap]
+      layers: [baseMaps.OpenStreetMap]
     });
 
     L.control.zoom({ position: "topright" }).addTo(map);
-    L.control.layers(this.baseMaps).addTo(map);
+    L.control.layers(baseMaps).addTo(map);
     L.control.scale().addTo(map);
 
     this.map = map;
@@ -84,30 +91,69 @@ export class MapService {
       throw new Error("Map is not created");
     }
 
-    this.map.pm.addControls();
+    this.map.pm.addControls({ cutPolygon: false });
+    this.mapLayer = L.geoJSON();
+    this.featureMap = {};
+
+    this.map.addLayer(this.mapLayer);
 
     this.map.on("pm:create", (e: any) => {
-      const feature = e.layer.toGeoJSON();
-      feature.properties._id = uuid();
+      this.mapLayer.addLayer(e.layer);
+      this._bindEditEvent(e.layer);
 
-      this.addFeature(feature);
-      this.events.featureCreated.emit(feature);
+      const layerId = L.Util.stamp(e.layer);
+      const feature = e.layer.toGeoJSON();
+      const data = { feature, layerId };
+      this.events.featureCreated.emit(data);
+    });
+
+    this.map.on("pm:remove", (e: any) => {
+      const layerId = L.Util.stamp(e.layer);
+      const featureId = this.featureMap[layerId];
+
+      delete this.featureMap[layerId];
+
+      const data = { featureId };
+      this.events.featureRemoved.emit(data);
     });
   }
 
-  addFeature(feature) {
+  addFeature(featureId: string, feature) {
     const layer = L.geoJSON(feature);
-    this.map.addLayer(layer);
-    this.layerMap[feature.properties._id] = layer;
+    this.mapLayer.addLayer(layer);
+    this._bindEditEvent(layer);
+
+    const layerId = L.Util.stamp(layer);
+    this.featureMap[layerId] = featureId;
   }
 
   removeFeature(featureId: string) {
-    this.map.removeLayer(this.layerMap[featureId]);
-    delete this.layerMap[featureId];
+    const layerId: string = this._findKey(this.featureMap, featureId);
+    this.mapLayer.removeLayer(parseInt(layerId));
+    delete this.featureMap[layerId];
   }
 
-  updateFeature(feature) {
-    this.removeFeature(feature.properties._id);
-    this.addFeature(feature);
+  updateFeature(featureId: string, feature) {
+    this.removeFeature(featureId);
+    this.addFeature(featureId, feature);
+  }
+
+  setFeatureId(layerId, featureId) {
+    this.featureMap[layerId] = featureId;
+  }
+
+  private _bindEditEvent(layer) {
+    layer.on("pm:edit", (e: any) => {
+      const layerId = L.Util.stamp(e.target);
+      const featureId = this.featureMap[layerId];
+      const feature = e.target.toGeoJSON();
+
+      const data = { featureId, feature };
+      this.events.featureUpdated.emit(data);
+    });
+  }
+
+  private _findKey(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
   }
 }

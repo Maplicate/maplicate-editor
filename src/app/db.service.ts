@@ -1,7 +1,13 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import * as IPFS from "ipfs";
 import * as OrbitDB from "orbit-db";
-import * as md5 from "md5";
+import md5 = require("md5");
+import uuid = require("uuid/v4");
+
+export interface IDocument {
+  _id: string;
+  _hash: string;
+}
 
 @Injectable()
 export class DbService {
@@ -40,7 +46,6 @@ export class DbService {
       this.ready = true;
 
       this.events.dbReady.emit();
-      console.log("IPFS is ready");
     });
   }
 
@@ -80,22 +85,43 @@ export class DbService {
     return this.createMap(address);
   }
 
-  async addFeature(feature): Promise<any> {
+  async addFeature(feature): Promise<IDocument> {
     if (!this.map) {
       throw new Error("Map is not created.");
     }
 
-    if (!feature.properties._id) {
-      throw new Error("Feature ID is undefined.");
-    }
-
     const doc = {
-      _id: feature.properties._id,
+      _id: uuid(),
       _hash: md5(JSON.stringify(feature)),
       feature
     };
 
     await this.map.put(doc);
+    this.docMap[doc._id] = doc._hash;
+
+    return doc as IDocument;
+  }
+
+  async updateFeature(id: string, feature): Promise<IDocument> {
+    if (!this.map) {
+      throw new Error("Map is not created.");
+    }
+
+    const doc = {
+      _id: id,
+      _hash: md5(JSON.stringify(feature)),
+      feature
+    };
+
+    await this.map.put(doc);
+    this.docMap[doc._id] = doc._hash;
+
+    return doc as IDocument;
+  }
+
+  async removeFeature(featureId: string): Promise<any> {
+    await this.map.del(featureId);
+    delete this.docMap[featureId];
   }
 
   private _bindMapEvents() {
@@ -105,25 +131,35 @@ export class DbService {
 
     this.map.events.on("replicated", () => {
       const newDocs = this.map.query(doc => !this.docMap[doc._id]);
-      const editedDocs = this.map.query(doc => {
-        return this.docMap[doc._id] && this.docMap[doc._id].hash !== doc._hash;
-      });
-      const deletedDocs = [];
+
+      for (const doc of newDocs) {
+        this.docMap[doc._id] = doc._hash;
+      }
+
+      const updatedDocs = this.map.query(
+        doc => this.docMap[doc._id] && this.docMap[doc._id] !== doc._hash
+      );
+
+      for (const doc of updatedDocs) {
+        this.docMap[doc._id] = doc._hash;
+      }
+
+      const removedDocs = [];
 
       for (const id in this.docMap) {
         if (this.map.get(id).length === 0) {
-          deletedDocs.push(id);
+          removedDocs.push({ _id: id });
           delete this.docMap[id];
         }
       }
 
-      const updates: any = {};
-
-      updates.new = newDocs.map(doc => doc.feature);
-      updates.edited = editedDocs.map(doc => doc.feature);
-      updates.deleted = deletedDocs;
-
-      this.events.mapReplicated.emit(updates);
+      const changes: any = {
+        new: newDocs,
+        updated: updatedDocs,
+        removed: removedDocs
+      };
+      console.log("changes", changes);
+      this.events.mapReplicated.emit(changes);
     });
   }
 }
