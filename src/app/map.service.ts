@@ -119,7 +119,7 @@ export class MapService {
   }
 
   addFeature(featureId: string, feature) {
-    const layer = L.geoJSON(feature);
+    const layer = L.geoJSON(feature).getLayers()[0];
     this.mapLayer.addLayer(layer);
     this._bindEditEvent(layer);
 

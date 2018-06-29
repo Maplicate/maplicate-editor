@@ -120,6 +120,10 @@ export class DbService {
   }
 
   async removeFeature(featureId: string): Promise<any> {
+    if (this.map.get(featureId).length === 0) {
+      return;
+    }
+
     await this.map.del(featureId);
     delete this.docMap[featureId];
   }
@@ -158,7 +162,7 @@ export class DbService {
         updated: updatedDocs,
         removed: removedDocs
       };
-      console.log("changes", changes);
+
       this.events.mapReplicated.emit(changes);
     });
   }
