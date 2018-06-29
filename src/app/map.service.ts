@@ -76,7 +76,7 @@ export class MapService {
       zoom: 3,
       minZoom: 4,
       maxZoom: 19,
-      layers: [baseMaps.OpenStreetMap]
+      layers: [baseMaps.Esri]
     });
 
     L.control.zoom({ position: "topright" }).addTo(map);
