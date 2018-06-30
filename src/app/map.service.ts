@@ -91,7 +91,11 @@ export class MapService {
       throw new Error("Map is not created");
     }
 
-    this.map.pm.addControls({ cutPolygon: false });
+    this.map.pm.addControls({
+      drawRectangle: false,
+      drawCircle: false,
+      cutPolygon: false
+    });
     this.mapLayer = L.geoJSON();
     this.featureMap = {};
 
@@ -135,7 +139,7 @@ export class MapService {
 
   updateFeature(featureId: string, feature) {
     const layerId: string = this._findKey(this.featureMap, featureId);
-    const layer = this.mapLayer.getLayer(parseInt(layerId, 10));
+    const layer: any = this.mapLayer.getLayer(parseInt(layerId, 10));
 
     if (feature.geometry.type === "Point") {
       const pointLayer = layer as L.Marker;
@@ -151,6 +155,10 @@ export class MapService {
       const latLngs = L.GeoJSON.coordsToLatLngs(coords);
       polyLayer.setLatLngs(latLngs);
     }
+
+    // toggle off and on to update the edit toggles
+    layer.pm.toggleEdit();
+    layer.pm.toggleEdit();
   }
 
   setFeatureId(layerId, featureId) {
