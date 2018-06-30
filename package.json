@@ -1,11 +1,11 @@
 {
-  "name": "mapix",
+  "name": "maplicate",
   "version": "1.0.0",
   "description": "a collaborative mapping tool based on IPFS network",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/haoliangyu/mapix.git"
+    "url": "git+https://gitlab.com/haoliangyu/maplicate.git"
   },
   "keywords": [
     "angular",
@@ -15,7 +15,7 @@
   "author": "Haoliang Yu <haholiang.yu@outlook.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/haoliangyu/mapix/issues"
+    "url": "https://gitlab.com/haoliangyu/maplicate/issues"
   },
   "scripts": {
     "ng": "ng",
