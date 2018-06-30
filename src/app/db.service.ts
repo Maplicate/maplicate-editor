@@ -107,9 +107,16 @@ export class DbService {
       throw new Error("Map is not created.");
     }
 
+    const hash = md5(JSON.stringify(feature));
+
+    // do not update unchanged feature
+    if (this.docMap[id] === hash) {
+      return;
+    }
+
     const doc = {
       _id: id,
-      _hash: md5(JSON.stringify(feature)),
+      _hash: hash,
       feature
     };
 

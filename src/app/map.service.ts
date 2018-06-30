@@ -129,13 +129,28 @@ export class MapService {
 
   removeFeature(featureId: string) {
     const layerId: string = this._findKey(this.featureMap, featureId);
-    this.mapLayer.removeLayer(parseInt(layerId));
+    this.mapLayer.removeLayer(parseInt(layerId, 10));
     delete this.featureMap[layerId];
   }
 
   updateFeature(featureId: string, feature) {
-    this.removeFeature(featureId);
-    this.addFeature(featureId, feature);
+    const layerId: string = this._findKey(this.featureMap, featureId);
+    const layer = this.mapLayer.getLayer(parseInt(layerId, 10));
+
+    if (feature.geometry.type === "Point") {
+      const pointLayer = layer as L.Marker;
+      const latLng = L.GeoJSON.coordsToLatLng(feature.geometry.coordinates);
+      pointLayer.setLatLng(latLng);
+    } else {
+      const polyLayer = layer as L.Polyline;
+      const coords =
+        feature.geometry.type === "Polygon"
+          ? // only support polygons with no hole
+            feature.geometry.coordinates[0]
+          : feature.geometry.coordinates;
+      const latLngs = L.GeoJSON.coordsToLatLngs(coords);
+      polyLayer.setLatLngs(latLngs);
+    }
   }
 
   setFeatureId(layerId, featureId) {
