@@ -14,14 +14,18 @@ import { DbService } from "../db.service";
 export class ToolbarComponent implements OnInit {
   public loading: boolean;
   public dbReady: boolean;
+  public mapReady: boolean;
+  public mapName: string;
 
   constructor(
     private db: DbService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.dbReady = false;
     this.loading = true;
+    this.dbReady = false;
+    this.mapReady = false;
+    this.mapName = "";
 
     this.db.events.dbReady.subscribe(() => {
       this.loading = false;
@@ -55,6 +59,9 @@ export class ToolbarComponent implements OnInit {
         snackBarRef.onAction().subscribe(() => {
           snackBarRef.dismiss();
         });
+
+        this.mapName = name.match(/[\/]?([^\/]+)$/)[1];
+        this.mapReady = true;
       } catch (error) {
         console.log(error);
       }
@@ -93,6 +100,12 @@ export class ToolbarComponent implements OnInit {
 
       this.loading = false;
     });
+  }
+
+  public async exitMap() {
+    await this.db.exitMap();
+    this.mapReady = false;
+    this.mapName = "";
   }
 
   private _bindMapEvents() {

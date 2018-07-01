@@ -15,6 +15,7 @@ export class DbService {
   private ipfs: any;
   private orbitdb: any;
   private map: any;
+  private mapName: string;
   private docMap: any;
   public ready: boolean;
   public events: any;
@@ -84,6 +85,17 @@ export class DbService {
 
   async joinMap(address: string): Promise<string> {
     return this.createMap(address);
+  }
+
+  async exitMap(): Promise<any> {
+    if (!this.map) {
+      throw new Error("Map is not created.");
+    }
+
+    await this.map.close();
+    await this.map.drop();
+    this.map = null;
+    this.docMap = {};
   }
 
   async addFeature(feature: Feature): Promise<IDocument> {
