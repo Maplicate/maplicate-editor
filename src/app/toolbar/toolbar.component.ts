@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { MatSnackBar } from "@angular/material";
+import { saveAs } from "file-saver";
 
 import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
@@ -106,6 +107,19 @@ export class ToolbarComponent implements OnInit {
     await this.db.exitMap();
     this.mapReady = false;
     this.mapName = "";
+  }
+
+  public download() {
+    const features = this.db.query(() => true);
+    const geojson = {
+      types: "FeatureCollection",
+      features
+    };
+    const blob = new Blob([JSON.stringify(geojson)], {
+      type: "application/json"
+    });
+
+    saveAs(blob, "map.geojson");
   }
 
   private _bindMapEvents() {

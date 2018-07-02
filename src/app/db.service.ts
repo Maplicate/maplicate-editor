@@ -8,6 +8,7 @@ import uuid = require("uuid/v4");
 export interface IDocument {
   _id: string;
   _hash: string;
+  feature?: Feature;
 }
 
 @Injectable()
@@ -146,6 +147,14 @@ export class DbService {
 
     await this.map.del(featureId);
     delete this.docMap[featureId];
+  }
+
+  query(mapper): IDocument[] {
+    if (!this.map) {
+      throw new Error("Map is not created.");
+    }
+
+    return this.map.query(mapper);
   }
 
   private _bindMapEvents() {

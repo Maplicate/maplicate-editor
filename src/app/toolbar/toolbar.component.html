@@ -18,7 +18,7 @@
 </mat-toolbar>
 
 <mat-menu #mapMenu="matMenu">
-  <button mat-menu-item>
+  <button mat-menu-item (click)="download()">
     <mat-icon>cloud_download</mat-icon> Download
   </button>
   <button mat-menu-item  (click)="exitMap()">
