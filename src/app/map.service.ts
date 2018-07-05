@@ -122,6 +122,14 @@ export class MapService {
     });
   }
 
+  zoomToFeatures() {
+    const bounds = this.mapLayer.getBounds();
+
+    if (bounds.isValid()) {
+      this.map.fitBounds(bounds);
+    }
+  }
+
   addFeature(featureId: string, feature) {
     const layer = L.geoJSON(feature).getLayers()[0];
     this.mapLayer.addLayer(layer);

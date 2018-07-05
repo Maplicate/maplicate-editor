@@ -39,6 +39,7 @@ export class MapComponent implements OnInit {
 
     this.db.events.mapReady.subscribe(() => {
       this.map.enableEditing();
+      this.map.zoomToFeatures();
     });
 
     this.db.events.mapReplicated.subscribe(changes => {
