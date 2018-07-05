@@ -6,7 +6,6 @@ import { NgMaterialModule } from "./ng-material/ng-material.module";
 import { AppComponent } from "./app.component";
 import { MapComponent } from "./map/map.component";
 import { ToolbarComponent } from "./toolbar/toolbar.component";
-import { ControlPanelComponent } from "./control-panel/control-panel.component";
 import { CreateMapDialogComponent } from "./create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "./join-map-dialog/join-map-dialog.component";
 
@@ -21,7 +20,6 @@ import "leaflet.pm";
     MapComponent,
     AppComponent,
     ToolbarComponent,
-    ControlPanelComponent,
     CreateMapDialogComponent,
     JoinMapDialogComponent
   ],
