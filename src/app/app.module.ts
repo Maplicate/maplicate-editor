@@ -1,6 +1,7 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
+import { ClipboardModule } from "ngx-clipboard";
 
 import { NgMaterialModule } from "./ng-material/ng-material.module";
 import { AppComponent } from "./app.component";
@@ -23,7 +24,7 @@ import "leaflet.pm";
     CreateMapDialogComponent,
     JoinMapDialogComponent
   ],
-  imports: [NgMaterialModule, BrowserModule, HttpClientModule],
+  imports: [NgMaterialModule, BrowserModule, HttpClientModule, ClipboardModule],
   entryComponents: [CreateMapDialogComponent, JoinMapDialogComponent],
   providers: [MapService, DbService],
   bootstrap: [AppComponent]

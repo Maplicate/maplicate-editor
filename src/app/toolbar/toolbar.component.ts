@@ -17,6 +17,7 @@ export class ToolbarComponent implements OnInit {
   public dbReady: boolean;
   public mapReady: boolean;
   public mapName: string;
+  public mapAddress: string;
 
   constructor(
     private db: DbService,
@@ -27,6 +28,7 @@ export class ToolbarComponent implements OnInit {
     this.dbReady = false;
     this.mapReady = false;
     this.mapName = "";
+    this.mapAddress = "";
 
     this.db.events.dbReady.subscribe(() => {
       this.loading = false;
@@ -49,17 +51,10 @@ export class ToolbarComponent implements OnInit {
       try {
         this.loading = true;
 
-        const address = await this.db.createMap(name);
+        this.mapAddress = await this.db.createMap(name);
         this._bindMapEvents();
 
-        const snackBarRef = this.snackBar.open(
-          `Map created: ${address}`,
-          "Close"
-        );
-
-        snackBarRef.onAction().subscribe(() => {
-          snackBarRef.dismiss();
-        });
+        this.snackBar.open("You create a new map!", "", { duration: 2000 });
 
         this.mapName = name.match(/[\/]?([^\/]+)$/)[1];
         this.mapReady = true;
@@ -84,17 +79,10 @@ export class ToolbarComponent implements OnInit {
       try {
         this.loading = true;
 
-        await this.db.joinMap(address);
+        this.mapAddress = await this.db.joinMap(address);
         this._bindMapEvents();
 
-        const snackBarRef = this.snackBar.open(
-          `Map joined: ${address}`,
-          "Close"
-        );
-
-        snackBarRef.onAction().subscribe(() => {
-          snackBarRef.dismiss();
-        });
+        this.snackBar.open("You join a new map!", "", { duration: 2000 });
       } catch (error) {
         console.log(error);
       }
@@ -107,6 +95,13 @@ export class ToolbarComponent implements OnInit {
     await this.db.exitMap();
     this.mapReady = false;
     this.mapName = "";
+    this.mapAddress = "";
+  }
+
+  public copyAddress() {
+    this.snackBar.open("Map address is copied to the clipboard.", "", {
+      duration: 2000
+    });
   }
 
   public download() {

@@ -18,6 +18,9 @@
 </mat-toolbar>
 
 <mat-menu #mapMenu="matMenu">
+  <button mat-menu-item ngxClipboard [cbContent]="mapAddress" (click)="copyAddress()">
+    <mat-icon>file_copy</mat-icon> Address
+  </button>
   <button mat-menu-item (click)="download()">
     <mat-icon>cloud_download</mat-icon> Download
   </button>
