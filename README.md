@@ -1,5 +1,7 @@
 # Maplicate
 
+[![Build Status](https://travis-ci.org/Maplicate/maplicate-editor.svg?branch=master)](https://travis-ci.org/Maplicate/maplicate-editor)
+
 Maplicate is a different collaborative mapping tool. It allows users to create and edit features on a shared map, without using a central server to host the data. The data synchronization is on a peer-to-peer network, which means
 
 - each participant is directly connected to the other
