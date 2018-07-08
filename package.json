@@ -82,6 +82,7 @@
     "karma-coverage-istanbul-reporter": "^2.0.0",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-html-reporter": "^1.2.0",
+    "level-js": "^3.0.0",
     "lint-staged": "^7.2.0",
     "node-sass": "^4.9.1",
     "prettier": "^1.13.7",
@@ -89,5 +90,8 @@
     "ts-node": "~6.0.3",
     "tslint": "~5.10.0",
     "typescript": "<2.7"
+  },
+  "browser": {
+    "leveldown": "level-js"
   }
 }
