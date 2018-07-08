@@ -9,8 +9,8 @@
   },
   "keywords": [
     "angular",
-    "leaflet",
-    "starter"
+    "ipfs",
+    "mapper"
   ],
   "author": "Haoliang Yu <haholiang.yu@outlook.com>",
   "license": "MIT",
@@ -32,7 +32,7 @@
       "git add"
     ]
   },
-  "homepage": "https://gitlab.com/haoliangyu/mapix#readme",
+  "homepage": "https://gitlab.com/haoliangyu/maplicate#readme",
   "dependencies": {
     "@angular/animations": "^5.2.0",
     "@angular/cdk": "^5.1.1",

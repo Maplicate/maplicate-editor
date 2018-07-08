@@ -1,35 +1,50 @@
-# mapix
+# Maplicate
 
-Mapix is a collaborative mapping based on IPFS and orbit-db.
+Maplicate is a different collaborative mapping tool. It allows users to create and edit features on a shared map, without using a central server to host the data. The data synchronization is on a peer-to-peer network, which means
 
-## Idea
+- each participant is directly connected to the other
+- each participant receives updates in real-time
+- each participant hosts a complete copy of map features
 
-Today, most large-scale mapping work is done with a collaborative way. From collecting business locations for an urban development plan to surveying for a road constructing plan, mapping at this scale usually takes the effort of tens of or hundreds of people. OpenStreetMap, the world's largest collaborative mapping program, is maintained by volunteers from the whole world.
-
-Data sharing is the center of the collaborative mapping. In the current practice, the data sharing is based on a master database where all mappers' client read updates from and write updates to.
-
-However, the use of a master database has several disadvantages:
-
-- there is cost to maintain such database
-- the data is not sharable without the connection of the database
-- the data has to be stored at a 3rd party
-- it takes more time to share data via a middleman
-
-In this project, a mapping tool based on a peer-to-peer network (IPFS).
+![preview](image/preview.png)
 
 ## Implementation
 
-A mapping client is a browser-based application. It is node in the IFPS network and uses orbit-db to synchronize data with peers.
+Maplicate is built with three layers:
 
-Currently, orbit-db uses in-memory cache as local storage. When the user maps a feature, the application will add the geojson data into orbit-db and synchronize with connected peers. When the application is off-line, the data is stored at the local storage and get synchronized once connected.
+- the map view that provides map feature visualization and editing
+- the data store that manages data update and synchronization
+- the p2e network where data is transmitted
 
-## To-do
+The three layers are developed in an application using [Angular](https://angular.io) and [Angular Material](https://material.angular.io/).
 
-- [x] try IPFS browser workability
-- [x] update ngx-leaflet-starter to Angular 6
-- [x] copy ngx-leaflet-starter into this project and make it map-only
-- [ ] add orbit-db and sync with map room table
-- [ ] add map editing tool
-- [ ] create map room and add peer
-- [ ] share geojson among peers
-- [ ] map shows synchronized geojson
+### Map View
+
+The map view is created with [Leaflet](https://leafletjs.com/), a mapping library with full features and rich plugin ecosystem. We use [leaflet.pm](https://github.com/codeofsumit/leaflet.pm/issues) to provide map feature editing and leverage its abundant map events for data store update.
+
+### Data Store
+
+[OrbitDB](https://github.com/orbitdb/orbit-db) servers as a data management service. Each map feature is stored in an in-memory key-value store with a unique id and a content hash.
+
+At one end, it receives map feature update notifications (with data) from the map view, save map features in the data store, and emit the update across the underline p2p network.
+
+At the other end, it receives data replication event from the p2e network, update its data store with the map features from other peers, and sends update notification to the map view.
+
+### P2P Network
+
+Under the hook, [IPFS](https://ipfs.io/) is used to keep peers connected and synchronize data among connected peers.
+
+## Development
+
+Setup the project locally:
+
+```bash
+$ npm install
+$ npm run start
+```
+
+then checkout the app at `localhost:4200` :-)
+
+## License
+
+MIT @ 2018

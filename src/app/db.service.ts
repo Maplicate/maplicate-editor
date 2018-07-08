@@ -2,8 +2,8 @@ import { Injectable, EventEmitter } from "@angular/core";
 import { Feature } from "geojson";
 import * as IPFS from "ipfs";
 import * as OrbitDB from "orbit-db";
-import md5 = require("md5");
-import uuid = require("uuid/v4");
+import * as md5 from "md5";
+import * as uuid from "uuid/v4";
 
 export interface IDocument {
   _id: string;
