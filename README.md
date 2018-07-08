@@ -8,6 +8,8 @@ Maplicate is a different collaborative mapping tool. It allows users to create a
 
 ![preview](image/preview.png)
 
+This tool is totally experimental and currently under massive development. It changes and breaks :-)
+
 ## Implementation
 
 Maplicate is built with three layers:
@@ -43,7 +45,7 @@ $ npm install
 $ npm run start
 ```
 
-then checkout the app at `localhost:4200` :-)
+then checkout the app at `localhost:4200` and play!
 
 ## License
 

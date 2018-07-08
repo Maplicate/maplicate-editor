@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/haoliangyu/maplicate.git"
+    "url": "git+https://github.com/Maplicate/maplicate-editor.git"
   },
   "keywords": [
     "angular",
@@ -15,7 +15,7 @@
   "author": "Haoliang Yu <haholiang.yu@outlook.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/haoliangyu/maplicate/issues"
+    "url": "https://github.com/Maplicate/maplicate-editor/issues"
   },
   "scripts": {
     "ng": "ng",
@@ -32,7 +32,7 @@
       "git add"
     ]
   },
-  "homepage": "https://gitlab.com/haoliangyu/maplicate#readme",
+  "homepage": "https://github.com/Maplicate/maplicate-editor#readme",
   "dependencies": {
     "@angular/animations": "^5.2.0",
     "@angular/cdk": "^5.1.1",
