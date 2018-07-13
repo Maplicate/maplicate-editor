@@ -13,16 +13,19 @@ export class MapService {
   public events: any;
   public map: any;
   private mapLayer: L.GeoJSON;
+  private editing: any;
 
   // layerId -> featureId
   private featureMap: any;
 
   constructor(private http: HttpClient) {
     this.events = {
+      featureEditStart: new EventEmitter(),
       featureCreated: new EventEmitter(),
       featureUpdated: new EventEmitter(),
       featureRemoved: new EventEmitter()
     };
+    this.editing = null;
   }
 
   disableMouseEvent(elementId: string): void {
@@ -94,7 +97,9 @@ export class MapService {
     this.map.pm.addControls({
       drawRectangle: false,
       drawCircle: false,
-      cutPolygon: false
+      cutPolygon: false,
+      editMode: false,
+      removalMode: false
     });
     this.mapLayer = L.geoJSON();
     this.featureMap = {};
@@ -164,24 +169,81 @@ export class MapService {
       polyLayer.setLatLngs(latLngs);
     }
 
-    // toggle off and on to update the edit toggles
-    layer.pm.toggleEdit();
-    layer.pm.toggleEdit();
+    if (layer.pm.enabled()) {
+      // toggle off and on to update the edit toggles
+      layer.pm.enable();
+    }
   }
 
   setFeatureId(layerId, featureId) {
     this.featureMap[layerId] = featureId;
   }
 
-  private _bindEditEvent(layer) {
-    layer.on("pm:edit", (e: any) => {
-      const layerId = L.Util.stamp(e.target);
-      const featureId = this.featureMap[layerId];
-      const feature = e.target.toGeoJSON();
+  finishEdit() {
+    if (!this.editing) {
+      return;
+    }
 
-      const data = { featureId, feature };
-      this.events.featureUpdated.emit(data);
+    this.editing = null;
+  }
+
+  cancelEdit() {
+    if (!this.editing) {
+      return;
+    }
+
+    this.editing.layer.pm.disable();
+
+    const original = this.editing.original;
+
+    if (original.geometry.type === "Point") {
+      const latLng = L.GeoJSON.coordsToLatLng(original.geometry.coordinates);
+      this.editing.layer.setLatLng(latLng);
+    } else {
+      const coords =
+        original.geometry.type === "Polygon"
+          ? // only support polygons with no hole
+            original.geometry.coordinates[0]
+          : original.geometry.coordinates;
+      const latLngs = L.GeoJSON.coordsToLatLngs(coords);
+      this.editing.layer.setLatLngs(latLngs);
+    }
+
+    this.finishEdit();
+  }
+
+  private _bindEditEvent(layer) {
+    layer.on("click", (e: any) => {
+      if (!this.editing && !e.target.pm.enabled()) {
+        this.editing = {
+          layer: e.target,
+          original: e.target.toGeoJSON()
+        };
+        e.target.pm.enable();
+
+        const layerId = L.Util.stamp(e.target);
+        const featureId = this.featureMap[layerId];
+        const feature = e.target.toGeoJSON();
+
+        this.events.featureEditStart.emit({
+          featureId,
+          layerId,
+          feature
+        });
+      }
     });
+
+    // layer.on("pm:edit", (e: any) => {
+    //   const layerId = L.Util.stamp(e.target);
+    //   const featureId = this.featureMap[layerId];
+    //   const feature = e.target.toGeoJSON();
+    //
+    //   const data = { featureId, feature };
+    //   this.events.featureUpdated.emit(data);
+    //
+    //   e.target.pm.disable();
+    //   this.editing = null;
+    // });
   }
 
   private _findKey(object, value) {

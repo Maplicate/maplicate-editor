@@ -15,6 +15,7 @@ import { DbService } from "./db.service";
 
 import "leaflet";
 import "leaflet.pm";
+import { FeatureEditFormComponent } from "./feature-edit-form/feature-edit-form.component";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import "leaflet.pm";
     AppComponent,
     ToolbarComponent,
     CreateMapDialogComponent,
-    JoinMapDialogComponent
+    JoinMapDialogComponent,
+    FeatureEditFormComponent
   ],
   imports: [NgMaterialModule, BrowserModule, HttpClientModule, ClipboardModule],
   entryComponents: [CreateMapDialogComponent, JoinMapDialogComponent],
