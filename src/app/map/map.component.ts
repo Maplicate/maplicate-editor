@@ -13,6 +13,8 @@ import { MapService, IFeatureLayer } from "../map.service";
 export class MapComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSidenav) sidenav: MatSidenav;
   public selected: IFeatureLayer;
+  public editProperties: any;
+  public savedProperties: any;
 
   constructor(private map: MapService, private db: DbService) {}
 
@@ -24,6 +26,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.map.events.featureEditStart.subscribe(
       async (featureLayer: IFeatureLayer) => {
         this.selected = featureLayer;
+
+        const document = this.db.getFeature(featureLayer.featureId);
+        const properties = document.feature.properties || {};
+        this.editProperties = JSON.parse(JSON.stringify(properties));
+        this.savedProperties = this.editProperties;
+
         await this.sidenav.open();
       }
     );
@@ -70,15 +78,41 @@ export class MapComponent implements OnInit, AfterViewInit {
     });
   }
 
+  onPropertyEdited(properties) {
+    this.savedProperties = properties;
+  }
+
   async deleteFeature(featureId: string) {
     this.map.removeFeature(featureId);
     this.map.finishEdit();
+
     await this.db.removeFeature(featureId);
     await this.sidenav.close();
+
+    this.selected = null;
+    this.editProperties = null;
+    this.savedProperties = null;
+  }
+
+  async saveEdit() {
+    const feature = this.map.saveEdit();
+    feature.properties = this.savedProperties;
+
+    await this.db.updateFeature(this.selected.featureId, feature);
+    await this.sidenav.close();
+
+    this.selected = null;
+    this.editProperties = null;
+    this.savedProperties = null;
   }
 
   async cancelEdit() {
     this.map.cancelEdit();
+
     await this.sidenav.close();
+
+    this.selected = null;
+    this.editProperties = null;
+    this.savedProperties = null;
   }
 }

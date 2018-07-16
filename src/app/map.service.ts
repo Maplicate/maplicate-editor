@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Feature } from "geojson";
 import * as L from "leaflet";
 
 export interface IFeatureLayer {
@@ -25,6 +26,8 @@ export class MapService {
       featureUpdated: new EventEmitter(),
       featureRemoved: new EventEmitter()
     };
+
+    this.mapLayer = null;
     this.editing = null;
   }
 
@@ -112,6 +115,8 @@ export class MapService {
 
       const layerId = L.Util.stamp(e.layer);
       const feature = e.layer.toGeoJSON();
+      feature.properties = {};
+
       const data = { feature, layerId };
       this.events.featureCreated.emit(data);
     });
@@ -187,6 +192,19 @@ export class MapService {
     this.editing = null;
   }
 
+  saveEdit(): Feature {
+    if (!this.editing) {
+      return;
+    }
+
+    const layer = this.editing.layer;
+    layer.pm.disable();
+
+    this.finishEdit();
+
+    return layer.toGeoJSON();
+  }
+
   cancelEdit() {
     if (!this.editing) {
       return;
@@ -212,6 +230,16 @@ export class MapService {
     this.finishEdit();
   }
 
+  exitMap() {
+    if (!this.mapLayer) {
+      return;
+    }
+
+    this.map.removeLayer(this.mapLayer);
+    this.mapLayer = null;
+    this.editing = null;
+  }
+
   private _bindEditEvent(layer) {
     layer.on("click", (e: any) => {
       if (!this.editing && !e.target.pm.enabled()) {
@@ -232,18 +260,6 @@ export class MapService {
         });
       }
     });
-
-    // layer.on("pm:edit", (e: any) => {
-    //   const layerId = L.Util.stamp(e.target);
-    //   const featureId = this.featureMap[layerId];
-    //   const feature = e.target.toGeoJSON();
-    //
-    //   const data = { featureId, feature };
-    //   this.events.featureUpdated.emit(data);
-    //
-    //   e.target.pm.disable();
-    //   this.editing = null;
-    // });
   }
 
   private _findKey(object, value) {

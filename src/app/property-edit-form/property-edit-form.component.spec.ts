@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { FeatureEditFormComponent } from "./feature-edit-form.component";
+import { PropertyEditFormComponent } from "./property-edit-form.component";
 
-describe("FeatureEditFormComponent", () => {
-  let component: FeatureEditFormComponent;
-  let fixture: ComponentFixture<FeatureEditFormComponent>;
+describe("PropertyEditFormComponent", () => {
+  let component: PropertyEditFormComponent;
+  let fixture: ComponentFixture<PropertyEditFormComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [FeatureEditFormComponent]
+      declarations: [PropertyEditFormComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FeatureEditFormComponent);
+    fixture = TestBed.createComponent(PropertyEditFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
