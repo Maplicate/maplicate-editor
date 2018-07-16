@@ -1,8 +1,10 @@
 <mat-sidenav-container class="full-size">
   <mat-sidenav position="end" mode="side" class="sidenav-edit">
     <h2>Edit Feature</h2>
-    <app-property-edit-form [properties]="editProperties" (saved)="onPropertyEdited($event)">
-    </app-property-edit-form>
+    <div class="property-edit-form">
+      <app-property-edit-form [properties]="editProperties" (saved)="onPropertyEdited($event)">
+      </app-property-edit-form>
+    </div>
     <div fxLayout="row" fxLayoutAlign=" none" >
       <button mat-raised-button
               color="warn"
