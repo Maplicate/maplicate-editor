@@ -1,2 +1,22 @@
-<div id="map">
-</div>
+<mat-sidenav-container class="full-size">
+  <mat-sidenav position="end" mode="side" class="sidenav-edit">
+    <h2>Edit Feature</h2>
+    <div class="property-edit-form">
+      <app-property-edit-form [properties]="editProperties" (saved)="onPropertyEdited($event)">
+      </app-property-edit-form>
+    </div>
+    <div fxLayout="row" fxLayoutAlign=" none" >
+      <button mat-raised-button
+              color="warn"
+              (click)="deleteFeature(selected.featureId)">
+        Delete
+      </button>
+      <span fxFlex></span>
+      <button mat-raised-button color="primary" (click)="saveEdit()">Save</button>
+      <button mat-button (click)="cancelEdit()">Cancel</button>
+    </div>
+  </mat-sidenav>
+  <section class="full-size">
+    <div id="map" class="full-size"></div>
+  </section>
+</mat-sidenav-container>

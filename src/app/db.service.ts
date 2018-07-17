@@ -99,6 +99,10 @@ export class DbService {
     this.docMap = {};
   }
 
+  getFeature(featureId: string): IDocument {
+    return this.map.get(featureId)[0];
+  }
+
   async addFeature(feature: Feature): Promise<IDocument> {
     if (!this.map) {
       throw new Error("Map is not created.");

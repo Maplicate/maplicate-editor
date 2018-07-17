@@ -1,0 +1,65 @@
+<mat-table #table [dataSource]="propertyList">
+
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- Name Column -->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <div [ngSwitch]="element.editing">
+        <form *ngSwitchCase="true">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Property Name" name="name" [(ngModel)]="element.name" required>
+          </mat-form-field>
+        </form>
+        <span *ngSwitchDefault>{{element.name}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Value Column -->
+  <ng-container matColumnDef="value">
+    <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <div [ngSwitch]="element.editing">
+        <form *ngSwitchCase="true">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Property Value" name="value" [(ngModel)]="element.value" required>
+          </mat-form-field>
+        </form>
+        <span *ngSwitchDefault>{{element.value}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Action Column -->
+  <ng-container matColumnDef="action">
+    <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+    <mat-cell *matCellDef="let element; let i = index;">
+      <div [ngSwitch]="element.editing">
+        <div *ngSwitchCase="true">
+          <button mat-icon-button (click)="saveEdit(i)" [disabled]="!isMeaningful(element.name)">
+            <mat-icon>done</mat-icon>
+          </button>
+          <button mat-icon-button (click)="cancelEdit(i)">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </div>
+        <div *ngSwitchDefault>
+          <button mat-icon-button (click)="editProperty(i)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="removeProperty(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
+
+<button mat-raised-button class="add-property-button" (click)="addProperty()">Add Property</button>

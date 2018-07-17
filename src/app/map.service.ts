@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Feature } from "geojson";
 import * as L from "leaflet";
 
 export interface IFeatureLayer {
@@ -13,16 +14,21 @@ export class MapService {
   public events: any;
   public map: any;
   private mapLayer: L.GeoJSON;
+  private editing: any;
 
   // layerId -> featureId
   private featureMap: any;
 
   constructor(private http: HttpClient) {
     this.events = {
+      featureEditStart: new EventEmitter(),
       featureCreated: new EventEmitter(),
       featureUpdated: new EventEmitter(),
       featureRemoved: new EventEmitter()
     };
+
+    this.mapLayer = null;
+    this.editing = null;
   }
 
   disableMouseEvent(elementId: string): void {
@@ -94,7 +100,9 @@ export class MapService {
     this.map.pm.addControls({
       drawRectangle: false,
       drawCircle: false,
-      cutPolygon: false
+      cutPolygon: false,
+      editMode: false,
+      removalMode: false
     });
     this.mapLayer = L.geoJSON();
     this.featureMap = {};
@@ -107,6 +115,8 @@ export class MapService {
 
       const layerId = L.Util.stamp(e.layer);
       const feature = e.layer.toGeoJSON();
+      feature.properties = {};
+
       const data = { feature, layerId };
       this.events.featureCreated.emit(data);
     });
@@ -164,23 +174,91 @@ export class MapService {
       polyLayer.setLatLngs(latLngs);
     }
 
-    // toggle off and on to update the edit toggles
-    layer.pm.toggleEdit();
-    layer.pm.toggleEdit();
+    if (layer.pm.enabled()) {
+      // toggle off and on to update the edit toggles
+      layer.pm.enable();
+    }
   }
 
   setFeatureId(layerId, featureId) {
     this.featureMap[layerId] = featureId;
   }
 
-  private _bindEditEvent(layer) {
-    layer.on("pm:edit", (e: any) => {
-      const layerId = L.Util.stamp(e.target);
-      const featureId = this.featureMap[layerId];
-      const feature = e.target.toGeoJSON();
+  finishEdit() {
+    if (!this.editing) {
+      return;
+    }
 
-      const data = { featureId, feature };
-      this.events.featureUpdated.emit(data);
+    this.editing = null;
+  }
+
+  saveEdit(): Feature {
+    if (!this.editing) {
+      return;
+    }
+
+    const layer = this.editing.layer;
+    layer.pm.disable();
+
+    this.finishEdit();
+
+    return layer.toGeoJSON();
+  }
+
+  cancelEdit() {
+    if (!this.editing) {
+      return;
+    }
+
+    this.editing.layer.pm.disable();
+
+    const original = this.editing.original;
+
+    if (original.geometry.type === "Point") {
+      const latLng = L.GeoJSON.coordsToLatLng(original.geometry.coordinates);
+      this.editing.layer.setLatLng(latLng);
+    } else {
+      const coords =
+        original.geometry.type === "Polygon"
+          ? // only support polygons with no hole
+            original.geometry.coordinates[0]
+          : original.geometry.coordinates;
+      const latLngs = L.GeoJSON.coordsToLatLngs(coords);
+      this.editing.layer.setLatLngs(latLngs);
+    }
+
+    this.finishEdit();
+  }
+
+  exitMap() {
+    if (!this.mapLayer) {
+      return;
+    }
+
+    this.map.removeLayer(this.mapLayer);
+    this.mapLayer = null;
+    this.editing = null;
+  }
+
+  private _bindEditEvent(layer) {
+    layer.on("click", (e: any) => {
+      if (!this.editing && !e.target.pm.enabled()) {
+        this.editing = {
+          layer: e.target,
+          original: e.target.toGeoJSON()
+        };
+        e.target.pm.enable();
+
+        const layerId = L.Util.stamp(e.target);
+        const featureId = this.featureMap[layerId];
+        const feature = e.target.toGeoJSON();
+
+        this.events.featureEditStart.emit({
+          featureId,
+          layerId,
+          feature
+        });
+      }
     });
   }
 

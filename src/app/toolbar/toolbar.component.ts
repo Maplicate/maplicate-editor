@@ -6,6 +6,7 @@ import { saveAs } from "file-saver";
 import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
 import { DbService } from "../db.service";
+import { MapService } from "../map.service";
 
 @Component({
   selector: "app-toolbar",
@@ -21,6 +22,7 @@ export class ToolbarComponent implements OnInit {
 
   constructor(
     private db: DbService,
+    private map: MapService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -93,6 +95,8 @@ export class ToolbarComponent implements OnInit {
 
   public async exitMap() {
     await this.db.exitMap();
+    this.map.exitMap();
+
     this.mapReady = false;
     this.mapName = "";
     this.mapAddress = "";
