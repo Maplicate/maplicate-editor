@@ -85,6 +85,9 @@ export class ToolbarComponent implements OnInit {
         this._bindMapEvents();
 
         this.snackBar.open("You join a new map!", "", { duration: 2000 });
+
+        this.mapName = address.match(/[\/]?([^\/]+)$/)[1];
+        this.mapReady = true;
       } catch (error) {
         console.log(error);
       }
