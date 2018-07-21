@@ -9,12 +9,13 @@
     "experimentalDecorators": true,
     "target": "es5",
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2017", "dom"]
-  },
-  "paths": {
-    "fs": ["./src/lib/noop"],
-    "path": ["./src/lib/noop"],
-    "stream": ["./src/lib/noop"],
-    "crypto": ["./src/lib/noop"]
+    "lib": ["es2017", "dom"],
+    "paths": {
+      "fs": ["./shims/noop"],
+      "stream": ["./shims/stream"],
+      "crypto": ["./shims/crypto"],
+      "os": ["./shims/noop"],
+      "path": ["./shims/path"]
+    }
   }
 }
