@@ -1,4 +1,5 @@
 import { Injectable, EventEmitter } from "@angular/core";
+import { Feature } from "geojson";
 import * as IPFS from "ipfs";
 import * as OrbitDB from "orbit-db";
 import * as md5 from "md5";
@@ -7,6 +8,7 @@ import * as uuid from "uuid/v4";
 export interface IDocument {
   _id: string;
   _hash: string;
+  feature?: Feature;
 }
 
 @Injectable()
@@ -14,6 +16,7 @@ export class DbService {
   private ipfs: any;
   private orbitdb: any;
   private map: any;
+  private mapName: string;
   private docMap: any;
   public ready: boolean;
   public events: any;
@@ -85,7 +88,22 @@ export class DbService {
     return this.createMap(address);
   }
 
-  async addFeature(feature): Promise<IDocument> {
+  async exitMap(): Promise<any> {
+    if (!this.map) {
+      throw new Error("Map is not created.");
+    }
+
+    await this.map.close();
+    await this.map.drop();
+    this.map = null;
+    this.docMap = {};
+  }
+
+  getFeature(featureId: string): IDocument {
+    return this.map.get(featureId)[0];
+  }
+
+  async addFeature(feature: Feature): Promise<IDocument> {
     if (!this.map) {
       throw new Error("Map is not created.");
     }
@@ -102,14 +120,21 @@ export class DbService {
     return doc as IDocument;
   }
 
-  async updateFeature(id: string, feature): Promise<IDocument> {
+  async updateFeature(id: string, feature: Feature): Promise<IDocument> {
     if (!this.map) {
       throw new Error("Map is not created.");
     }
 
+    const hash = md5(JSON.stringify(feature));
+
+    // do not update unchanged feature
+    if (this.docMap[id] === hash) {
+      return;
+    }
+
     const doc = {
       _id: id,
-      _hash: md5(JSON.stringify(feature)),
+      _hash: hash,
       feature
     };
 
@@ -120,8 +145,20 @@ export class DbService {
   }
 
   async removeFeature(featureId: string): Promise<any> {
+    if (this.map.get(featureId).length === 0) {
+      return;
+    }
+
     await this.map.del(featureId);
     delete this.docMap[featureId];
+  }
+
+  query(mapper): IDocument[] {
+    if (!this.map) {
+      throw new Error("Map is not created.");
+    }
+
+    return this.map.query(mapper);
   }
 
   private _bindMapEvents() {
@@ -130,13 +167,13 @@ export class DbService {
     });
 
     this.map.events.on("replicated", () => {
-      const newDocs = this.map.query(doc => !this.docMap[doc._id]);
+      const newDocs: IDocument[] = this.map.query(doc => !this.docMap[doc._id]);
 
       for (const doc of newDocs) {
         this.docMap[doc._id] = doc._hash;
       }
 
-      const updatedDocs = this.map.query(
+      const updatedDocs: IDocument[] = this.map.query(
         doc => this.docMap[doc._id] && this.docMap[doc._id] !== doc._hash
       );
 
@@ -144,11 +181,11 @@ export class DbService {
         this.docMap[doc._id] = doc._hash;
       }
 
-      const removedDocs = [];
+      const removedDocs: IDocument[] = [];
 
       for (const id in this.docMap) {
         if (this.map.get(id).length === 0) {
-          removedDocs.push({ _id: id });
+          removedDocs.push({ _id: id, _hash: "" });
           delete this.docMap[id];
         }
       }
@@ -158,7 +195,7 @@ export class DbService {
         updated: updatedDocs,
         removed: removedDocs
       };
-      console.log("changes", changes);
+
       this.events.mapReplicated.emit(changes);
     });
   }

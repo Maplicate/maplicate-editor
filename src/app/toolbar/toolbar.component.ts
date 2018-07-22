@@ -1,10 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { MatSnackBar } from "@angular/material";
+import { saveAs } from "file-saver";
 
 import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
 import { DbService } from "../db.service";
+import { MapService } from "../map.service";
 
 @Component({
   selector: "app-toolbar",
@@ -14,14 +16,21 @@ import { DbService } from "../db.service";
 export class ToolbarComponent implements OnInit {
   public loading: boolean;
   public dbReady: boolean;
+  public mapReady: boolean;
+  public mapName: string;
+  public mapAddress: string;
 
   constructor(
     private db: DbService,
+    private map: MapService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.dbReady = false;
     this.loading = true;
+    this.dbReady = false;
+    this.mapReady = false;
+    this.mapName = "";
+    this.mapAddress = "";
 
     this.db.events.dbReady.subscribe(() => {
       this.loading = false;
@@ -44,17 +53,13 @@ export class ToolbarComponent implements OnInit {
       try {
         this.loading = true;
 
-        const address = await this.db.createMap(name);
+        this.mapAddress = await this.db.createMap(name);
         this._bindMapEvents();
 
-        const snackBarRef = this.snackBar.open(
-          `Map created: ${address}`,
-          "Close"
-        );
+        this.snackBar.open("You create a new map!", "", { duration: 2000 });
 
-        snackBarRef.onAction().subscribe(() => {
-          snackBarRef.dismiss();
-        });
+        this.mapName = name.match(/[\/]?([^\/]+)$/)[1];
+        this.mapReady = true;
       } catch (error) {
         console.log(error);
       }
@@ -76,23 +81,47 @@ export class ToolbarComponent implements OnInit {
       try {
         this.loading = true;
 
-        await this.db.joinMap(address);
+        this.mapAddress = await this.db.joinMap(address);
         this._bindMapEvents();
 
-        const snackBarRef = this.snackBar.open(
-          `Map joined: ${address}`,
-          "Close"
-        );
+        this.snackBar.open("You join a new map!", "", { duration: 2000 });
 
-        snackBarRef.onAction().subscribe(() => {
-          snackBarRef.dismiss();
-        });
+        this.mapName = address.match(/[\/]?([^\/]+)$/)[1];
+        this.mapReady = true;
       } catch (error) {
         console.log(error);
       }
 
       this.loading = false;
     });
+  }
+
+  public async exitMap() {
+    await this.db.exitMap();
+    this.map.exitMap();
+
+    this.mapReady = false;
+    this.mapName = "";
+    this.mapAddress = "";
+  }
+
+  public copyAddress() {
+    this.snackBar.open("Map address is copied to the clipboard.", "", {
+      duration: 2000
+    });
+  }
+
+  public download() {
+    const features = this.db.query(() => true);
+    const geojson = {
+      types: "FeatureCollection",
+      features
+    };
+    const blob = new Blob([JSON.stringify(geojson)], {
+      type: "application/json"
+    });
+
+    saveAs(blob, "map.geojson");
   }
 
   private _bindMapEvents() {

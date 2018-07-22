@@ -1,26 +1,27 @@
 {
-  "name": "mapix",
-  "version": "1.0.0",
+  "name": "maplicate",
+  "version": "0.1.0",
   "description": "a collaborative mapping tool based on IPFS network",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/haoliangyu/mapix.git"
+    "url": "git+https://github.com/Maplicate/maplicate-editor.git"
   },
   "keywords": [
     "angular",
-    "leaflet",
-    "starter"
+    "ipfs",
+    "mapper"
   ],
   "author": "Haoliang Yu <haholiang.yu@outlook.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/haoliangyu/mapix/issues"
+    "url": "https://github.com/Maplicate/maplicate-editor/issues"
   },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod",
+    "build:dev": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
@@ -32,8 +33,9 @@
       "git add"
     ]
   },
-  "homepage": "https://gitlab.com/haoliangyu/mapix#readme",
+  "homepage": "https://github.com/Maplicate/maplicate-editor#readme",
   "dependencies": {
+    "10": "0.0.1",
     "@angular/animations": "^6.0.7",
     "@angular/cdk": "^6.3.1",
     "@angular/common": "^6.0.7",
@@ -46,16 +48,20 @@
     "@angular/platform-browser": "^6.0.7",
     "@angular/platform-browser-dynamic": "^6.0.7",
     "@angular/router": "^6.0.7",
+    "@types/file-saver": "^1.3.0",
+    "@types/geojson": "^7946.0.4",
     "@types/leaflet": "^1.2.7",
     "@types/md5": "^2.1.32",
     "@types/uuid": "^3.4.3",
     "buffer": "^5.1.0",
     "core-js": "^2.5.6",
     "crypto-browserify": "^3.12.0",
-    "ipfs": "^0.29.3",
+    "file-saver": "^1.3.8",
+    "ipfs": "^0.30.1",
     "leaflet": "^1.3.1",
     "leaflet.pm": "^0.25.0",
     "md5": "^2.2.1",
+    "ngx-clipboard": "^11.0.0",
     "orbit-db": "^0.19.8",
     "path-browserify": "^1.0.0",
     "process": "^0.11.10",
@@ -72,7 +78,7 @@
     "@angular/language-service": "^6.0.7",
     "@types/jasmine": "^2.8.7",
     "@types/jasminewd2": "~2.0.2",
-    "@types/node": "^10.5.0",
+    "@types/node": "^10.5.1",
     "chai": "^4.1.2",
     "codelyzer": "^4.4.2",
     "husky": "^0.14.3",
@@ -83,13 +89,17 @@
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage-istanbul-reporter": "^2.0.0",
     "karma-jasmine": "^1.1.2",
-    "karma-jasmine-html-reporter": "^1.1.0",
+    "karma-jasmine-html-reporter": "^1.2.0",
+    "level-js": "^3.0.0",
     "lint-staged": "^7.2.0",
-    "node-sass": "^4.9.0",
-    "prettier": "^1.13.6",
+    "node-sass": "^4.9.1",
+    "prettier": "^1.13.7",
     "protractor": "~5.3.2",
     "ts-node": "~7.0.0",
     "tslint": "~5.10.0",
-    "typescript": "^2.7.2"
+    "typescript": "~2.7.2"
+  },
+  "browser": {
+    "leveldown": "level-js"
   }
 }

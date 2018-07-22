@@ -8,8 +8,10 @@ import {
   MatIconModule,
   MatProgressSpinnerModule,
   MatDialogModule,
-  MatTabsModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatMenuModule,
+  MatSidenavModule,
+  MatTableModule
 } from "@angular/material";
 
 const modules = [
@@ -21,8 +23,10 @@ const modules = [
   MatIconModule,
   MatProgressSpinnerModule,
   MatDialogModule,
-  MatTabsModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatMenuModule,
+  MatSidenavModule,
+  MatTableModule
 ];
 
 @NgModule({

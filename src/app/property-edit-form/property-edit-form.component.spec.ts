@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ControlPanelComponent } from "./control-panel.component";
+import { PropertyEditFormComponent } from "./property-edit-form.component";
 
-describe("ControlPanelComponent", () => {
-  let component: ControlPanelComponent;
-  let fixture: ComponentFixture<ControlPanelComponent>;
+describe("PropertyEditFormComponent", () => {
+  let component: PropertyEditFormComponent;
+  let fixture: ComponentFixture<PropertyEditFormComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ControlPanelComponent]
+      declarations: [PropertyEditFormComponent]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ControlPanelComponent);
+    fixture = TestBed.createComponent(PropertyEditFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
