@@ -35,7 +35,6 @@
   },
   "homepage": "https://github.com/Maplicate/maplicate-editor#readme",
   "dependencies": {
-    "10": "0.0.1",
     "@angular/animations": "^6.0.7",
     "@angular/cdk": "^6.3.1",
     "@angular/common": "^6.0.7",
@@ -90,7 +89,6 @@
     "karma-coverage-istanbul-reporter": "^2.0.0",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-html-reporter": "^1.2.0",
-    "level-js": "^3.0.0",
     "lint-staged": "^7.2.0",
     "node-sass": "^4.9.2",
     "prettier": "^1.13.7",
@@ -98,8 +96,5 @@
     "ts-node": "~7.0.0",
     "tslint": "~5.10.0",
     "typescript": "~2.7.2"
-  },
-  "browser": {
-    "leveldown": "level-js"
   }
 }

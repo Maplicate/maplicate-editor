@@ -15,7 +15,8 @@
       "stream": ["./shims/stream"],
       "crypto": ["./shims/crypto"],
       "os": ["./shims/noop"],
-      "path": ["./shims/path"]
+      "path": ["./shims/path"],
+      "vm": ["./shims/noop"]
     }
   }
 }
