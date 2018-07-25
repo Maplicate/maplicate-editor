@@ -5,8 +5,10 @@ import { saveAs } from "file-saver";
 
 import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
+
 import { DbService } from "../db.service";
 import { MapService } from "../map.service";
+import { LoadingService } from "../services/loading.service";
 
 @Component({
   selector: "app-toolbar",
@@ -14,27 +16,28 @@ import { MapService } from "../map.service";
   styleUrls: ["./toolbar.component.scss"]
 })
 export class ToolbarComponent implements OnInit {
-  public loading: boolean;
   public dbReady: boolean;
-  public mapReady: boolean;
-  public mapName: string;
-  public mapAddress: string;
 
   constructor(
     private db: DbService,
     private map: MapService,
+    private loadingService: LoadingService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.loading = true;
+    this.loadingService.startLoading();
     this.dbReady = false;
-    this.mapReady = false;
-    this.mapName = "";
-    this.mapAddress = "";
 
     this.db.events.dbReady.subscribe(() => {
-      this.loading = false;
-      this.dbReady = true;
+      this.loadingService.endLoading();
+    });
+
+    this.db.events.mapReplicate.subscribe(() => {
+      this.loadingService.startLoading();
+    });
+
+    this.db.events.mapReplicated.subscribe(() => {
+      this.loadingService.endLoading();
     });
   }
 
@@ -51,20 +54,16 @@ export class ToolbarComponent implements OnInit {
       }
 
       try {
-        this.loading = true;
+        this.loadingService.startLoading();
 
-        this.mapAddress = await this.db.createMap(name);
-        this._bindMapEvents();
+        await this.db.createMap(name);
 
         this.snackBar.open("You create a new map!", "", { duration: 2000 });
-
-        this.mapName = name.match(/[\/]?([^\/]+)$/)[1];
-        this.mapReady = true;
       } catch (error) {
         console.log(error);
       }
 
-      this.loading = false;
+      this.loadingService.endLoading();
     });
   }
 
@@ -79,30 +78,22 @@ export class ToolbarComponent implements OnInit {
       }
 
       try {
-        this.loading = true;
+        this.loadingService.startLoading();
 
-        this.mapAddress = await this.db.joinMap(address);
-        this._bindMapEvents();
+        await this.db.joinMap(address);
 
         this.snackBar.open("You join a new map!", "", { duration: 2000 });
-
-        this.mapName = address.match(/[\/]?([^\/]+)$/)[1];
-        this.mapReady = true;
       } catch (error) {
         console.log(error);
       }
 
-      this.loading = false;
+      this.loadingService.endLoading();
     });
   }
 
   public async exitMap() {
     await this.db.exitMap();
     this.map.exitMap();
-
-    this.mapReady = false;
-    this.mapName = "";
-    this.mapAddress = "";
   }
 
   public copyAddress() {
@@ -122,15 +113,5 @@ export class ToolbarComponent implements OnInit {
     });
 
     saveAs(blob, "map.geojson");
-  }
-
-  private _bindMapEvents() {
-    this.db.events.mapReplicate.subscribe(() => {
-      this.loading = true;
-    });
-
-    this.db.events.mapReplicated.subscribe(() => {
-      this.loading = false;
-    });
   }
 }

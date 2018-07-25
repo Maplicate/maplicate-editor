@@ -4,21 +4,30 @@
     <mat-icon>book</mat-icon>
   </button>
   <span class="toolbar-filler"></span>
-  <button mat-button *ngIf="!mapReady" (click)="createMap()" [disabled]="!dbReady">
+  <button mat-button
+          *ngIf="!db.mapAddress"
+          (click)="createMap()"
+          [disabled]="!dbReady && loadingService.isLoading()">
     <mat-icon>add</mat-icon> Create
   </button>
-  <button mat-button *ngIf="!mapReady" (click)="joinMap()" [disabled]="!dbReady">
+  <button mat-button
+          *ngIf="!db.mapAddress"
+          (click)="joinMap()"
+          [disabled]="!dbReady && loadingService.isLoading()">
     <mat-icon>group</mat-icon> Join
   </button>
-  <button mat-button *ngIf="mapReady" [matMenuTriggerFor]="mapMenu">
-    {{mapName}} <mat-icon>arrow_drop_down</mat-icon>
+  <button mat-button *ngIf="db.mapAddress" [matMenuTriggerFor]="mapMenu">
+    {{db.mapName}} <mat-icon>arrow_drop_down</mat-icon>
   </button>
-  <mat-progress-spinner *ngIf="loading" mode="indeterminate" color="accent" diameter="30">
+  <mat-progress-spinner *ngIf="loadingService.isLoading()"
+                        mode="indeterminate"
+                        color="accent"
+                        diameter="30">
   </mat-progress-spinner>
 </mat-toolbar>
 
 <mat-menu #mapMenu="matMenu">
-  <button mat-menu-item ngxClipboard [cbContent]="mapAddress" (click)="copyAddress()">
+  <button mat-menu-item ngxClipboard [cbContent]="db.mapAddress" (click)="copyAddress()">
     <mat-icon>file_copy</mat-icon> Address
   </button>
   <button mat-menu-item (click)="download()">
