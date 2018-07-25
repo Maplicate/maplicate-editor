@@ -1,8 +1,8 @@
 import { Component, OnInit, AfterViewInit } from "@angular/core";
 import { ActivatedRoute, Params } from "@angular/router";
 import { MatSnackBar } from "@angular/material";
-import { LoadingService } from "../services/loading.service"
-import { DbService } from "../db.service";
+import { LoadingService } from "../services/loading.service";
+import { DbService } from "../services/db.service";
 
 @Component({
   selector: "app-editor-page",

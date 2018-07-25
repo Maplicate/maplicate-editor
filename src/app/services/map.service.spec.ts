@@ -1,6 +1,6 @@
 import { TestBed, inject } from "@angular/core/testing";
 
-import { MapService } from "./map.service";
+import { MapService } from "./services/map.service";
 
 describe("MapService", () => {
   beforeEach(() => {

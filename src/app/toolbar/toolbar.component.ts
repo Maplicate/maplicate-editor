@@ -6,8 +6,8 @@ import { saveAs } from "file-saver";
 import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
 
-import { DbService } from "../db.service";
-import { MapService } from "../map.service";
+import { DbService } from "../services/db.service";
+import { MapService } from "../services/map.service";
 import { LoadingService } from "../services/loading.service";
 
 @Component({

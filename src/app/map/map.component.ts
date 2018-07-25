@@ -2,8 +2,8 @@ import { Component, OnInit, AfterViewInit, ViewChild } from "@angular/core";
 import { MatSidenav } from "@angular/material";
 import { Observable } from "rxjs/Rx";
 import * as L from "leaflet";
-import { DbService, IDocument } from "../db.service";
-import { MapService, IFeatureLayer } from "../map.service";
+import { DbService, IDocument } from "../services/db.service";
+import { MapService, IFeatureLayer } from "../services/map.service";
 
 @Component({
   selector: "app-map",

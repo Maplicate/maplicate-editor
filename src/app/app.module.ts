@@ -14,8 +14,8 @@ import { JoinMapDialogComponent } from "./join-map-dialog/join-map-dialog.compon
 import { PropertyEditFormComponent } from "./property-edit-form/property-edit-form.component";
 import { EditorPageComponent } from "./editor-page/editor-page.component";
 
-import { MapService } from "./map.service";
-import { DbService } from "./db.service";
+import { MapService } from "./services/map.service";
+import { DbService } from "./services/db.service";
 import { LoadingService } from "./services/loading.service";
 
 import "leaflet";
