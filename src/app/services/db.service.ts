@@ -16,9 +16,9 @@ export class DbService {
   private ipfs: any;
   private orbitdb: any;
   private map: any;
-  private mapName: string;
   private docMap: any;
-  public ready: boolean;
+  private ipfsReady: boolean;
+
   public events: any;
 
   constructor() {
@@ -36,7 +36,7 @@ export class DbService {
     };
 
     this.ipfs = new IPFS(ipfsOptions);
-    this.ready = false;
+    this.ipfsReady = false;
     this.events = {
       dbReady: new EventEmitter(),
       mapReady: new EventEmitter(),
@@ -46,14 +46,26 @@ export class DbService {
 
     this.ipfs.once("ready", async () => {
       this.orbitdb = new OrbitDB(this.ipfs);
-      this.ready = true;
+      this.ipfsReady = true;
 
       this.events.dbReady.emit();
     });
   }
 
+  get ready(): boolean {
+    return this.ipfsReady;
+  }
+
+  get mapName(): string {
+    if (!this.ipfsReady || !this.map) {
+      return null;
+    }
+
+    return this.map.address.toString().match(/[\/]?([^\/]+)$/)[1];
+  }
+
   get mapAddress(): string {
-    if (!this.ready || !this.map) {
+    if (!this.ipfsReady || !this.map) {
       return null;
     }
 
@@ -61,7 +73,7 @@ export class DbService {
   }
 
   async createMap(name: string): Promise<string> {
-    if (!this.ready) {
+    if (!this.ipfsReady) {
       throw new Error("IPFS is not ready.");
     }
 
@@ -145,7 +157,7 @@ export class DbService {
   }
 
   async removeFeature(featureId: string): Promise<any> {
-    if (this.map.get(featureId).length === 0) {
+    if (!this.map || this.map.get(featureId).length === 0) {
       return;
     }
 
