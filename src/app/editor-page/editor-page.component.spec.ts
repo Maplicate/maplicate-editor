@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { EditorPageComponent } from './editor-page.component';
+import { EditorPageComponent } from "./editor-page.component";
 
-describe('EditorPageComponent', () => {
+describe("EditorPageComponent", () => {
   let component: EditorPageComponent;
   let fixture: ComponentFixture<EditorPageComponent>;
 
@@ -19,7 +19,7 @@ describe('EditorPageComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

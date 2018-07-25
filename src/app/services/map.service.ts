@@ -40,8 +40,8 @@ export class MapService {
 
   createMap(elementId: string): void {
     const osmAttr =
-      "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>, " +
-      "Tiles courtesy of <a href='http://hot.openstreetmap.org/' target='_blank'>Humanitarian OpenStreetMap Team</a>";
+      "&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, " +
+      "Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>";
 
     const esriAttr =
       "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, " +
@@ -49,8 +49,8 @@ export class MapService {
       "Esri China (Hong Kong), and the GIS User Community";
 
     const cartoAttr =
-      "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> " +
-      "&copy; <a href='http://cartodb.com/attributions'>CartoDB</a>";
+      "&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> " +
+      "&copy; <a href="http://cartodb.com/attributions">CartoDB</a>";
 
     const baseMaps = {
       OpenStreetMap: L.tileLayer(
