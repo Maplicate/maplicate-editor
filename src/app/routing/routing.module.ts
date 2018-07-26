@@ -5,16 +5,11 @@ import { EditorPageComponent } from "../editor-page/editor-page.component";
 
 const routes: Routes = [
   {
-    path: "",
-    redirectTo: "editor",
-    pathMatch: "full"
-  },
-  {
-    path: "editor",
+    path: ":action",
     component: EditorPageComponent
   },
   {
-    path: "editor/:action",
+    path: "",
     component: EditorPageComponent
   }
 ];
