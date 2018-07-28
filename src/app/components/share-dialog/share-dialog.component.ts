@@ -18,7 +18,7 @@ export class ShareDialogComponent implements OnInit {
 
   ngOnInit() {}
 
-  private copyLink() {
+  public copyLink() {
     this.snackBar.open("Share link is copied to the clipboard.", "", {
       duration: 2000
     });

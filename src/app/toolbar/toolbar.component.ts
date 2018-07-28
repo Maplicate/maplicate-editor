@@ -20,9 +20,9 @@ export class ToolbarComponent implements OnInit {
   public dbReady: boolean;
 
   constructor(
-    private db: DbService,
+    public db: DbService,
     private map: MapService,
-    private loadingService: LoadingService,
+    public loadingService: LoadingService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
@@ -92,7 +92,7 @@ export class ToolbarComponent implements OnInit {
     });
   }
 
-  private showShareDialog() {
+  public showShareDialog() {
     const baseUrl = window.location.origin;
     const mapAddress = this.db.mapAddress;
 
@@ -104,18 +104,18 @@ export class ToolbarComponent implements OnInit {
     });
   }
 
-  private async exitMap() {
+  public async exitMap() {
     await this.db.exitMap();
     this.map.exitMap();
   }
 
-  private copyAddress() {
+  public copyAddress() {
     this.snackBar.open("Map address is copied to the clipboard.", "", {
       duration: 2000
     });
   }
 
-  private download() {
+  public download() {
     const features = this.db.query(() => true);
     const geojson = {
       types: "FeatureCollection",
