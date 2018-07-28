@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Share Your Map</h2>
+<mat-dialog-content>
+  <div fxLayout="row">
+    <mat-form-field fxFlex>
+      <input matInput
+             placeholder="Shard this link to join your map"
+             [value]="joinLink"
+             type="text"
+             readonly>
+    </mat-form-field>
+    <button mat-icon-button
+            ngxClipboard
+            [cbContent]="joinLink"
+            (click)="copyLink()"
+            fxFlex="none">
+      <mat-icon>file_copy</mat-icon>
+    </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>
