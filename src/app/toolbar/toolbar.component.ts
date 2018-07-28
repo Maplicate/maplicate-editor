@@ -5,6 +5,7 @@ import { saveAs } from "file-saver";
 
 import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
+import { ShareDialogComponent } from "../components/share-dialog/share-dialog.component";
 
 import { DbService } from "../services/db.service";
 import { MapService } from "../services/map.service";
@@ -91,18 +92,30 @@ export class ToolbarComponent implements OnInit {
     });
   }
 
-  public async exitMap() {
+  private showShareDialog() {
+    const baseUrl = window.location.origin;
+    const mapAddress = this.db.mapAddress;
+
+    this.dialog.open(ShareDialogComponent, {
+      width: "400px",
+      data: {
+        joinLink: `${baseUrl}/join?address=${encodeURIComponent(mapAddress)}`
+      }
+    });
+  }
+
+  private async exitMap() {
     await this.db.exitMap();
     this.map.exitMap();
   }
 
-  public copyAddress() {
+  private copyAddress() {
     this.snackBar.open("Map address is copied to the clipboard.", "", {
       duration: 2000
     });
   }
 
-  public download() {
+  private download() {
     const features = this.db.query(() => true);
     const geojson = {
       types: "FeatureCollection",

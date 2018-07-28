@@ -11,6 +11,7 @@ import { MapComponent } from "./map/map.component";
 import { ToolbarComponent } from "./toolbar/toolbar.component";
 import { CreateMapDialogComponent } from "./create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "./join-map-dialog/join-map-dialog.component";
+import { ShareDialogComponent } from "./components/share-dialog/share-dialog.component";
 import { PropertyEditFormComponent } from "./property-edit-form/property-edit-form.component";
 import { EditorPageComponent } from "./editor-page/editor-page.component";
 
@@ -26,6 +27,7 @@ import "leaflet.pm";
     MapComponent,
     AppComponent,
     ToolbarComponent,
+    ShareDialogComponent,
     CreateMapDialogComponent,
     JoinMapDialogComponent,
     PropertyEditFormComponent,
@@ -39,7 +41,11 @@ import "leaflet.pm";
     HttpClientModule,
     ClipboardModule
   ],
-  entryComponents: [CreateMapDialogComponent, JoinMapDialogComponent],
+  entryComponents: [
+    CreateMapDialogComponent,
+    JoinMapDialogComponent,
+    ShareDialogComponent
+  ],
   providers: [MapService, DbService, LoadingService],
   bootstrap: [AppComponent]
 })
