@@ -1,22 +1,13 @@
 import { Injectable, EventEmitter } from "@angular/core";
-import { Observable, from } from "rxjs";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class LoadingService {
   private event: EventEmitter<boolean>;
-  private observable: Observable<boolean>;
   private indicator: boolean;
-
-  get loading (): Observable<boolean> {
-    return this.observable;
-  }
 
   constructor() {
     this.indicator = false;
     this.event = new EventEmitter();
-    this.observable = from(this.event);
   }
 
   public isLoading(): boolean {

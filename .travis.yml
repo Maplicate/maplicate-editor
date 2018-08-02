@@ -5,7 +5,7 @@ install:
   - npm install
 script:
   - npm run lint
-  - npm run build:dev
+  - npm run build
 deploy:
   provider: s3
   access_key_id: $AWS_KEY_ID
