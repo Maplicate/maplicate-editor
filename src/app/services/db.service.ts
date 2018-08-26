@@ -1,7 +1,5 @@
 import { Injectable, EventEmitter } from "@angular/core";
 import { Feature } from "geojson";
-// import * as IPFS from "ipfs";
-import * as OrbitDB from "orbit-db";
 import * as md5 from "md5";
 import * as uuid from "uuid/v4";
 
@@ -11,7 +9,7 @@ export interface IDocument {
   feature?: Feature;
 }
 
-declare var Ipfs: any;
+declare var OrbitDB: any;
 
 @Injectable()
 export class DbService {
@@ -37,7 +35,7 @@ export class DbService {
       }
     };
 
-    this.ipfs = new Ipfs(ipfsOptions);
+    this.ipfs = new (<any>window).Ipfs(ipfsOptions);
     this.ipfsReady = false;
     this.events = {
       dbReady: new EventEmitter(),

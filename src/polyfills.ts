@@ -58,3 +58,4 @@ import "zone.js/dist/zone"; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+import "abortcontroller-polyfill/dist/polyfill-patch-fetch";
