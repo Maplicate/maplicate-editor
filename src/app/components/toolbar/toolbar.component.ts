@@ -3,13 +3,13 @@ import { MatDialog } from "@angular/material";
 import { MatSnackBar } from "@angular/material";
 import { saveAs } from "file-saver";
 
-import { CreateMapDialogComponent } from "../create-map-dialog/create-map-dialog.component";
-import { JoinMapDialogComponent } from "../join-map-dialog/join-map-dialog.component";
-import { ShareDialogComponent } from "../components/share-dialog/share-dialog.component";
+import { CreateMapDialogComponent } from "../../create-map-dialog/create-map-dialog.component";
+import { JoinMapDialogComponent } from "../../join-map-dialog/join-map-dialog.component";
+import { ShareDialogComponent } from "../../components/share-dialog/share-dialog.component";
 
-import { DbService } from "../services/db.service";
-import { MapService } from "../services/map.service";
-import { LoadingService } from "../services/loading.service";
+import { DbService } from "../../services/db.service";
+import { MapControlService } from "../../services/map-control.service";
+import { LoadingService } from "../../services/loading.service";
 
 @Component({
   selector: "app-toolbar",
@@ -21,28 +21,38 @@ export class ToolbarComponent implements OnInit {
 
   constructor(
     public db: DbService,
-    private map: MapService,
     public loadingService: LoadingService,
+    private map: MapControlService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
     this.loadingService.startLoading();
     this.dbReady = false;
 
-    this.db.events.dbReady.subscribe(() => {
-      this.loadingService.endLoading();
-    });
-
-    this.db.events.mapReplicate.subscribe(() => {
-      this.loadingService.startLoading();
-    });
-
-    this.db.events.mapReplicated.subscribe(() => {
+    this.db.events.ready.subscribe(() => {
       this.loadingService.endLoading();
     });
   }
 
   ngOnInit() {}
+
+  public get mapAddress () {
+    if (!this.db.map || !this.db.map.mapAddress) {
+      return "";
+    }
+
+    const { root, path } = this.db.map.mapAddress;
+
+    return `${root}/${path}`;
+  }
+
+  public get mapName () {
+    if (!this.db.map || !this.db.map.mapAddress) {
+      return "";
+    }
+
+    return this.db.map.mapAddress.path;
+  }
 
   public createMap(): void {
     const createMapDialog = this.dialog.open(CreateMapDialogComponent, {
@@ -56,9 +66,7 @@ export class ToolbarComponent implements OnInit {
 
       try {
         this.loadingService.startLoading();
-
-        await this.db.createMap(name);
-
+        this.db.create(name);
         this.snackBar.open("You create a new map!", "", { duration: 2000 });
       } catch (error) {
         console.log(error);
@@ -80,9 +88,7 @@ export class ToolbarComponent implements OnInit {
 
       try {
         this.loadingService.startLoading();
-
-        await this.db.joinMap(address);
-
+        this.db.join(address);
         this.snackBar.open("You join a new map!", "", { duration: 2000 });
       } catch (error) {
         console.log(error);
@@ -94,7 +100,7 @@ export class ToolbarComponent implements OnInit {
 
   public showShareDialog() {
     const baseUrl = window.location.origin;
-    const mapAddress = this.db.mapAddress;
+    const mapAddress = this.db.map.mapAddress;
 
     this.dialog.open(ShareDialogComponent, {
       width: "400px",
@@ -105,7 +111,7 @@ export class ToolbarComponent implements OnInit {
   }
 
   public async exitMap() {
-    await this.db.exitMap();
+    await this.db.close();
     this.map.exitMap();
   }
 
@@ -116,7 +122,9 @@ export class ToolbarComponent implements OnInit {
   }
 
   public download() {
-    const features = this.db.query(() => true);
+    // TODO: add back this feature
+    // const features = this.db.query(() => true);
+    const features = [];
     const geojson = {
       types: "FeatureCollection",
       features

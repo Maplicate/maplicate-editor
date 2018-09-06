@@ -1,8 +1,8 @@
 import { Component, OnInit, AfterViewInit } from "@angular/core";
 import { ActivatedRoute, Router, Params } from "@angular/router";
 import { MatSnackBar } from "@angular/material";
-import { LoadingService } from "../services/loading.service";
-import { DbService } from "../services/db.service";
+import { LoadingService } from "../../services/loading.service";
+import { DbService } from "../../services/db.service";
 
 @Component({
   selector: "app-editor-page",
@@ -54,7 +54,7 @@ export class EditorPageComponent implements OnInit, AfterViewInit {
       await actionFunc();
       this.router.navigateByUrl("/");
     } else if (actionFunc && !this.db.ready) {
-      this.db.events.dbReady.subscribe(async () => {
+      this.db.events.ready.subscribe(async () => {
         await actionFunc();
         this.router.navigateByUrl("/");
       });
@@ -64,8 +64,7 @@ export class EditorPageComponent implements OnInit, AfterViewInit {
   private async createMap (name: string) {
     try {
       this.loading.startLoading();
-      await this.db.createMap(name);
-
+      this.db.create(name);
       this.snackBar.open("You create a new map!", "", { duration: 2000 });
     } catch (error) {
       console.log(error);
@@ -77,8 +76,7 @@ export class EditorPageComponent implements OnInit, AfterViewInit {
   private async joinMap (address: string) {
     try {
       this.loading.startLoading();
-      await this.db.joinMap(address);
-
+      this.db.join(address);
       this.snackBar.open("You join a new map!", "", { duration: 2000 });
     } catch (error) {
       console.log(error);

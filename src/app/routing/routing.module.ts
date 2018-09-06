@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule, Routes } from "@angular/router";
-import { EditorPageComponent } from "../editor-page/editor-page.component";
+import { EditorPageComponent } from "../pages/editor-page/editor-page.component";
 
 const routes: Routes = [
   {

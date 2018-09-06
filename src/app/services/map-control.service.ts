@@ -10,7 +10,7 @@ export interface IFeatureLayer {
 }
 
 @Injectable()
-export class MapService {
+export class MapControlService {
   public events: any;
   public map: any;
   private mapLayer: L.GeoJSON;

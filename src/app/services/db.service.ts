@@ -1,27 +1,22 @@
 import { Injectable, EventEmitter } from "@angular/core";
-import { Feature } from "geojson";
-import * as md5 from "md5";
-import * as uuid from "uuid/v4";
-
-export interface IDocument {
-  _id: string;
-  _hash: string;
-  feature?: Feature;
-}
+import { MaplicateNode } from "maplicate-core";
 
 declare var OrbitDB: any;
 
 @Injectable()
 export class DbService {
-  private ipfs: any;
   private orbitdb: any;
-  private map: any;
-  private docMap: any;
-  private ipfsReady: boolean;
+  private maplicate: any;
+  private readyEvent: EventEmitter<null>;
+  private mapCreatedEvent: EventEmitter<null>;
+  private _ready: boolean;
+  private _map: MaplicateNode;
 
-  public events: any;
+  constructor () {
+    this._ready = false;
+    this.readyEvent = new EventEmitter<null>();
+    this.mapCreatedEvent = new EventEmitter<null>();
 
-  constructor() {
     const ipfsOptions = {
       EXPERIMENTAL: {
         pubsub: true
@@ -35,180 +30,54 @@ export class DbService {
       }
     };
 
-    this.ipfs = new (<any>window).Ipfs(ipfsOptions);
-    this.ipfsReady = false;
-    this.events = {
-      dbReady: new EventEmitter(),
-      mapReady: new EventEmitter(),
-      mapReplicate: new EventEmitter(),
-      mapReplicated: new EventEmitter()
-    };
+    const ipfs = new (<any>window).Ipfs(ipfsOptions);
 
-    this.ipfs.once("ready", async () => {
-      this.orbitdb = new OrbitDB(this.ipfs);
-      this.ipfsReady = true;
-
-      this.events.dbReady.emit();
+    ipfs.once("ready", async () => {
+      this.orbitdb = new OrbitDB(ipfs);
+      this._ready = true;
+      this.readyEvent.emit();
     });
   }
 
-  get ready(): boolean {
-    return this.ipfsReady;
+  public get ready() {
+    return this._ready;
   }
 
-  get mapName(): string {
-    if (!this.ipfsReady || !this.map) {
-      return null;
-    }
-
-    return this.map.address.toString().match(/[\/]?([^\/]+)$/)[1];
+  public get map() {
+    return this._map;
   }
 
-  get mapAddress(): string {
-    if (!this.ipfsReady || !this.map) {
-      return null;
-    }
-
-    return this.map.address.toString();
-  }
-
-  async createMap(name: string): Promise<string> {
-    if (!this.ipfsReady) {
-      throw new Error("IPFS is not ready.");
-    }
-
-    if (this.map) {
-      throw new Error("Map has been created.");
-    }
-
-    this.map = await this.orbitdb.docs(name, { write: ["*"] });
-    this._bindMapEvents();
-
-    await this.map.load();
-
-    this.docMap = this.map.query(doc => doc).reduce((docMap, doc) => {
-      docMap[doc._id] = doc._hash;
-      return docMap;
-    }, {});
-
-    this.events.mapReady.emit();
-
-    return this.map.address.toString();
-  }
-
-  async joinMap(address: string): Promise<string> {
-    return this.createMap(address);
-  }
-
-  async exitMap(): Promise<any> {
-    if (!this.map) {
-      throw new Error("Map is not created.");
-    }
-
-    await this.map.close();
-    await this.map.drop();
-    this.map = null;
-    this.docMap = {};
-  }
-
-  getFeature(featureId: string): IDocument {
-    return this.map.get(featureId)[0];
-  }
-
-  async addFeature(feature: Feature): Promise<IDocument> {
-    if (!this.map) {
-      throw new Error("Map is not created.");
-    }
-
-    const doc = {
-      _id: uuid(),
-      _hash: md5(JSON.stringify(feature)),
-      feature
+  public get events() {
+    return {
+      ready: this.readyEvent,
+      mapCreated: this.mapCreatedEvent
     };
-
-    await this.map.put(doc);
-    this.docMap[doc._id] = doc._hash;
-
-    return doc as IDocument;
   }
 
-  async updateFeature(id: string, feature: Feature): Promise<IDocument> {
-    if (!this.map) {
-      throw new Error("Map is not created.");
+  public create (name: string) {
+    if (!this._ready) {
+      throw new Error("not ready");
     }
 
-    const hash = md5(JSON.stringify(feature));
-
-    // do not update unchanged feature
-    if (this.docMap[id] === hash) {
-      return;
-    }
-
-    const doc = {
-      _id: id,
-      _hash: hash,
-      feature
-    };
-
-    await this.map.put(doc);
-    this.docMap[doc._id] = doc._hash;
-
-    return doc as IDocument;
+    this._map = new MaplicateNode(this.orbitdb, name);
+    this.mapCreatedEvent.emit();
   }
 
-  async removeFeature(featureId: string): Promise<any> {
-    if (!this.map || this.map.get(featureId).length === 0) {
-      return;
+  public join (address: string) {
+    if (!this._ready) {
+      throw new Error("not ready");
     }
 
-    await this.map.del(featureId);
-    delete this.docMap[featureId];
+    this._map =  new MaplicateNode(this.orbitdb, address);
+    this.mapCreatedEvent.emit();
   }
 
-  query(mapper): IDocument[] {
-    if (!this.map) {
-      throw new Error("Map is not created.");
+  public async close () {
+    if (!this._map) {
+      throw new Error("no map");
     }
 
-    return this.map.query(mapper);
-  }
-
-  private _bindMapEvents() {
-    this.map.events.on("replicate", () => {
-      this.events.mapReplicate.emit();
-    });
-
-    this.map.events.on("replicated", () => {
-      const newDocs: IDocument[] = this.map.query(doc => !this.docMap[doc._id]);
-
-      for (const doc of newDocs) {
-        this.docMap[doc._id] = doc._hash;
-      }
-
-      const updatedDocs: IDocument[] = this.map.query(
-        doc => this.docMap[doc._id] && this.docMap[doc._id] !== doc._hash
-      );
-
-      for (const doc of updatedDocs) {
-        this.docMap[doc._id] = doc._hash;
-      }
-
-      const removedDocs: IDocument[] = [];
-
-      for (const id in this.docMap) {
-        if (this.map.get(id).length === 0) {
-          removedDocs.push({ _id: id, _hash: "" });
-          delete this.docMap[id];
-        }
-      }
-
-      const changes: any = {
-        new: newDocs,
-        updated: updatedDocs,
-        removed: removedDocs
-      };
-
-      this.events.mapReplicated.emit(changes);
-    });
+    await this._map.close();
+    this._map = null;
   }
 }

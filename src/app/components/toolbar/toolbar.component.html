@@ -5,19 +5,19 @@
   </button>
   <span class="toolbar-filler"></span>
   <button mat-button
-          *ngIf="!db.mapAddress"
+          *ngIf="!mapName"
           (click)="createMap()"
           [disabled]="!dbReady && loadingService.isLoading()">
     <mat-icon>add</mat-icon> Create
   </button>
   <button mat-button
-          *ngIf="!db.mapAddress"
+          *ngIf="!mapName"
           (click)="joinMap()"
           [disabled]="!dbReady && loadingService.isLoading()">
     <mat-icon>group</mat-icon> Join
   </button>
-  <button mat-button *ngIf="db.mapAddress" [matMenuTriggerFor]="mapMenu">
-    {{db.mapName}} <mat-icon>arrow_drop_down</mat-icon>
+  <button mat-button *ngIf="mapName" [matMenuTriggerFor]="mapMenu">
+    {{mapName}} <mat-icon>arrow_drop_down</mat-icon>
   </button>
   <mat-progress-spinner *ngIf="loadingService.isLoading()"
                         mode="indeterminate"
@@ -27,7 +27,7 @@
 </mat-toolbar>
 
 <mat-menu #mapMenu="matMenu">
-  <button mat-menu-item ngxClipboard [cbContent]="db.mapAddress" (click)="copyAddress()">
+  <button mat-menu-item ngxClipboard [cbContent]="mapAddress" (click)="copyAddress()">
     <mat-icon>file_copy</mat-icon> Address
   </button>
   <button mat-menu-item (click)="download()">

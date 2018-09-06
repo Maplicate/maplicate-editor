@@ -7,20 +7,17 @@ import { NgMaterialModule } from "./ng-material/ng-material.module";
 import { RoutingModule } from "./routing/routing.module";
 
 import { AppComponent } from "./app.component";
-import { MapComponent } from "./map/map.component";
-import { ToolbarComponent } from "./toolbar/toolbar.component";
+import { MapComponent } from "./components/map/map.component";
+import { ToolbarComponent } from "./components/toolbar/toolbar.component";
 import { CreateMapDialogComponent } from "./create-map-dialog/create-map-dialog.component";
 import { JoinMapDialogComponent } from "./join-map-dialog/join-map-dialog.component";
 import { ShareDialogComponent } from "./components/share-dialog/share-dialog.component";
 import { PropertyEditFormComponent } from "./property-edit-form/property-edit-form.component";
-import { EditorPageComponent } from "./editor-page/editor-page.component";
+import { EditorPageComponent } from "./pages/editor-page/editor-page.component";
 
-import { MapService } from "./services/map.service";
+import { MapControlService } from "./services/map-control.service";
 import { DbService } from "./services/db.service";
 import { LoadingService } from "./services/loading.service";
-
-import "leaflet";
-import "leaflet.pm";
 
 @NgModule({
   declarations: [
@@ -46,7 +43,7 @@ import "leaflet.pm";
     JoinMapDialogComponent,
     ShareDialogComponent
   ],
-  providers: [MapService, DbService, LoadingService],
+  providers: [MapControlService, DbService, LoadingService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
