@@ -37,21 +37,19 @@ export class ToolbarComponent implements OnInit {
   ngOnInit() {}
 
   public get mapAddress () {
-    if (!this.db.map || !this.db.map.mapAddress) {
+    if (!this.db.map || !this.db.map.address) {
       return "";
     }
 
-    const { root, path } = this.db.map.mapAddress;
-
-    return `${root}/${path}`;
+    return this.db.map.address;
   }
 
   public get mapName () {
-    if (!this.db.map || !this.db.map.mapAddress) {
+    if (!this.db.map || !this.db.map.address) {
       return "";
     }
 
-    return this.db.map.mapAddress.path;
+    return this.db.map.address.split("/").pop();
   }
 
   public createMap(): void {
