@@ -3,9 +3,9 @@ import { MatDialog } from "@angular/material";
 import { MatSnackBar } from "@angular/material";
 import { saveAs } from "file-saver";
 
-import { CreateMapDialogComponent } from "../../create-map-dialog/create-map-dialog.component";
-import { JoinMapDialogComponent } from "../../join-map-dialog/join-map-dialog.component";
-import { ShareDialogComponent } from "../../components/share-dialog/share-dialog.component";
+import { CreateMapDialogComponent } from "../dialogs/create-map-dialog/create-map-dialog.component";
+import { JoinMapDialogComponent } from "../dialogs/join-map-dialog/join-map-dialog.component";
+import { ShareDialogComponent } from "../dialogs/share-dialog/share-dialog.component";
 
 import { DbService } from "../../services/db.service";
 import { MapControlService } from "../../services/map-control.service";
