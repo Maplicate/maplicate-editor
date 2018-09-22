@@ -98,12 +98,12 @@ export class ToolbarComponent implements OnInit {
 
   public showShareDialog() {
     const baseUrl = window.location.origin;
-    const mapAddress = this.db.map.mapAddress;
+    const address = this.db.map.address;
 
     this.dialog.open(ShareDialogComponent, {
       width: "400px",
       data: {
-        joinLink: `${baseUrl}/join?address=${encodeURIComponent(mapAddress)}`
+        joinLink: `${baseUrl}/join?address=${encodeURIComponent(address)}`
       }
     });
   }
@@ -120,9 +120,7 @@ export class ToolbarComponent implements OnInit {
   }
 
   public download() {
-    // TODO: add back this feature
-    // const features = this.db.query(() => true);
-    const features = [];
+    const features = this.db.map.query(() => true);
     const geojson = {
       types: "FeatureCollection",
       features
@@ -131,6 +129,6 @@ export class ToolbarComponent implements OnInit {
       type: "application/json"
     });
 
-    saveAs(blob, "map.geojson");
+    saveAs(blob, `${this.mapName}.geojson`);
   }
 }
