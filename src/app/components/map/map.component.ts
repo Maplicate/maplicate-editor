@@ -115,6 +115,12 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.db.map.on("ready", () => {
       this.map.enableEditing();
       this.map.zoomToFeatures();
+
+      // add all features to the map
+      const features = this.db.map.query(() => true);
+      for (const feature of features) {
+        this.map.addFeature(feature._id, feature);
+      }
     });
 
     this.db.map.on("feature:added", (feature) => {

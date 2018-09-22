@@ -1,5 +1,4 @@
 import { Injectable, EventEmitter } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
 import { Feature } from "geojson";
 import * as L from "leaflet";
 
@@ -19,7 +18,7 @@ export class MapControlService {
   // layerId -> featureId
   private featureMap: any;
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.events = {
       featureEditStart: new EventEmitter(),
       featureCreated: new EventEmitter(),
