@@ -53,7 +53,7 @@ export class MapControlService {
       )
     };
 
-    const map = L.map("map", {
+    const map = L.map(elementId, {
       zoomControl: false,
       center: [0, 0],
       zoom: 3,
@@ -67,6 +67,24 @@ export class MapControlService {
     L.control.scale().addTo(map);
 
     this.map = map;
+  }
+
+  disableEditing(): void {
+    if (!this.map) {
+      throw new Error("Map is not created");
+    }
+
+    this.map.pm.removeControls();
+    this.map.off("pm:create");
+    this.map.off("pm:remove");
+
+    if (this.mapLayer) {
+      this.map.removeLayer(this.mapLayer);
+    }
+
+    this.mapLayer = null;
+    this.featureMap = null;
+    this.editing = null;
   }
 
   enableEditing(): void {
@@ -205,16 +223,6 @@ export class MapControlService {
     }
 
     this.finishEdit();
-  }
-
-  exitMap() {
-    if (!this.mapLayer) {
-      return;
-    }
-
-    this.map.removeLayer(this.mapLayer);
-    this.mapLayer = null;
-    this.editing = null;
   }
 
   private _bindEditEvent(layer) {

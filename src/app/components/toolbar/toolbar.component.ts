@@ -109,8 +109,8 @@ export class ToolbarComponent implements OnInit {
   }
 
   public async exitMap() {
+    this.map.disableEditing();
     await this.db.close();
-    this.map.exitMap();
   }
 
   public copyAddress() {
