@@ -8,12 +8,25 @@
     <div fxLayout="row" fxLayoutAlign=" none" >
       <button mat-raised-button
               color="warn"
-              (click)="deleteFeature(selected.featureId)">
+              (click)="deleteFeature(selected.featureId)"
+              matTooltip="Delete the selected feature"
+              aria-label="Button that deletes the selected feature">
         Delete
       </button>
       <span fxFlex></span>
-      <button mat-raised-button color="primary" (click)="saveEdit()">Save</button>
-      <button mat-button (click)="cancelEdit()">Cancel</button>
+      <button mat-raised-button
+              color="primary"
+              (click)="saveEdit()"
+              matTooltip="Save edits"
+              aria-label="Button that saves all edits">
+        Save
+      </button>
+      <button mat-button
+              (click)="cancelEdit()"
+              matTooltip="Cancel edits"
+              aria-label="Button that cancels all edits">
+        Cancel
+      </button>
     </div>
   </mat-sidenav>
   <section class="full-size">

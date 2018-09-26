@@ -39,18 +39,31 @@
     <mat-cell *matCellDef="let element; let i = index;">
       <div [ngSwitch]="element.editing">
         <div *ngSwitchCase="true">
-          <button mat-icon-button (click)="saveEdit(i)" [disabled]="!isMeaningful(element.name)">
+          <button mat-icon-button
+                  (click)="saveEdit(i)"
+                  [disabled]="!isMeaningful(element.name)"
+                  matTooltip="Finish property edit"
+                  aria-label="Button that finishes the current property edit">
             <mat-icon>done</mat-icon>
           </button>
-          <button mat-icon-button (click)="cancelEdit(i)">
+          <button mat-icon-button
+                  (click)="cancelEdit(i)"
+                  matTooltip="Cancel property edit"
+                  aria-label="Button that cancels the current property edit">
             <mat-icon>cancel</mat-icon>
           </button>
         </div>
         <div *ngSwitchDefault>
-          <button mat-icon-button (click)="editProperty(i)">
+          <button mat-icon-button
+                  (click)="editProperty(i)"
+                  matTooltip="Edit property"
+                  aria-label="Button that triggers the property edit">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button (click)="removeProperty(i)">
+          <button mat-icon-button
+                  (click)="removeProperty(i)"
+                  matTooltip="Delete property"
+                  aria-label="Button that deletes the current property">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
@@ -62,4 +75,10 @@
   <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 </mat-table>
 
-<button mat-raised-button class="add-property-button" (click)="addProperty()">Add Property</button>
+<button mat-raised-button
+        class="add-property-button"
+        (click)="addProperty()"
+        matTooltip="Add a new property"
+        aria-label="Button that adds a new property to the selected feature">
+  Add Property
+</button>

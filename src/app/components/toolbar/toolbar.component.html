@@ -7,13 +7,17 @@
   <button mat-button
           *ngIf="!mapName"
           (click)="createMap()"
-          [disabled]="!dbReady && loadingService.isLoading()">
+          [disabled]="!dbReady && loadingService.isLoading()"
+          matTooltip="Create a new map"
+          aria-label="Button that opens a dialog to create a distributed map">
     <mat-icon>add</mat-icon> Create
   </button>
   <button mat-button
           *ngIf="!mapName"
           (click)="joinMap()"
-          [disabled]="!dbReady && loadingService.isLoading()">
+          [disabled]="!dbReady && loadingService.isLoading()"
+          matTooltip="Join an existing map with the address"
+          aria-label="Button that opens a dialog to join an existing map">
     <mat-icon>group</mat-icon> Join
   </button>
   <button mat-button *ngIf="mapName" [matMenuTriggerFor]="mapMenu">
@@ -27,16 +31,30 @@
 </mat-toolbar>
 
 <mat-menu #mapMenu="matMenu">
-  <button mat-menu-item ngxClipboard [cbContent]="mapAddress" (click)="copyAddress()">
+  <button mat-menu-item
+          ngxClipboard
+          [cbContent]="mapAddress"
+          (click)="copyAddress()"
+          matTooltip="Copy the current map address"
+          aria-label="Button that copies the current map address to the clipboard">
     <mat-icon>file_copy</mat-icon> Address
   </button>
-  <button mat-menu-item (click)="download()">
-    <mat-icon>cloud_download</mat-icon> Download
-  </button>
-  <button mat-menu-item (click)="showShareDialog()">
+  <button mat-menu-item
+          (click)="showShareDialog()"
+          matTooltip="Creates a share link"
+          aria-label="Button that creates a link to share the current map">
     <mat-icon>group_add</mat-icon> Share
   </button>
-  <button mat-menu-item  (click)="exitMap()">
+  <button mat-menu-item
+          (click)="download()"
+          matTooltip="Export all map features to a GeoJSON"
+          aria-label="Button that exports all map features to a GeoJSON">
+    <mat-icon>cloud_download</mat-icon> Export
+  </button>
+  <button mat-menu-item
+          (click)="exitMap()"
+          matTooltip="Exit the current map and drop all data"
+          aria-label="Button that exits the current map">
     <mat-icon>clear</mat-icon> Exit
   </button>
 </mat-menu>
