@@ -70,11 +70,11 @@
     "@types/node": "^10.9.4",
     "chai": "^4.1.2",
     "codelyzer": "^4.3.0",
-    "husky": "^0.14.3",
+    "husky": "^1.1.2",
     "jasmine": "^3.1.0",
-    "jasmine-core": "~3.1.0",
+    "jasmine-core": "~3.2.1",
     "jasmine-spec-reporter": "~4.2.1",
-    "karma": "^2.0.2",
+    "karma": "^3.0.0",
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage-istanbul-reporter": "^2.0.0",
     "karma-jasmine": "^1.1.2",
@@ -83,8 +83,8 @@
     "node-sass": "^4.9.0",
     "prettier": "^1.14.2",
     "protractor": "^5.4.1",
-    "ts-node": "~6.0.3",
-    "tslint": "~5.10.0",
-    "typescript": "2.9.2"
+    "ts-node": "~7.0.1",
+    "tslint": "~5.11.0",
+    "typescript": "3.1.3"
   }
 }
