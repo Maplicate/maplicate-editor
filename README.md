@@ -1,6 +1,6 @@
 # Maplicate
 
-[![Build Status](https://travis-ci.org/Maplicate/maplicate-editor.svg?branch=master)](https://travis-ci.org/Maplicate/maplicate-editor)
+[![Build Status](https://travis-ci.org/Maplicate/maplicate-editor.svg?branch=master)](https://travis-ci.org/Maplicate/maplicate-editor) [![Greenkeeper badge](https://badges.greenkeeper.io/Maplicate/maplicate-editor.svg)](https://greenkeeper.io/)
 
 Maplicate is a collaborative mapping tool based on a peer-to-peer network. It allows users to create and edit features on a shared map, without using a central server to host the data. The data synchronization is on a peer-to-peer network, which means
 
